@@ -66,7 +66,8 @@ class RegistrationController extends Controller
 
 					if ($user->withRelated->save(false, array('keys'=>array('accountCharacters')))) {
 						// todo: expand on withRelated class to include withRelated saves within withrelated saves
-						//$api->withRelated->save(false, array('accountCharacters')); // this saves character data (couldn't get it to save with above ;_;)
+						// or find something better
+						$api->withRelated->save(false, array('accountCharacters')); // this saves character data (couldn't get it to save with above ;_;)
 						
 
 						if (Yii::app()->controller->module->sendActivationMail) {
