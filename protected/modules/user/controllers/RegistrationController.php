@@ -64,7 +64,7 @@ class RegistrationController extends Controller
 					$user->status         = ((Yii::app()->controller->module->activeAfterRegister) ? User::STATUS_ACTIVE : User::STATUS_NOACTIVE);
 					$api->isActive        = 1;
 
-					if ($user->withRelated->save(false, array('keys'=>array('accountCharacters')))) {
+					if ($user->withRelated->save(false, array('keys'))) {
 						// todo: expand on withRelated class to include withRelated saves within withrelated saves
 						// or find something better
 						$api->withRelated->save(false, array('accountCharacters')); // this saves character data (couldn't get it to save with above ;_;)

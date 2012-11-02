@@ -57,17 +57,82 @@ $this->breadcrumbs=array(
                 ),*/
             ),
         ));
-
-       $button = $this->widget('bootstrap.widgets.TbButton', array(
+/*
+$button = $this->widget('bootstrap.widgets.TbButton', array(
     'buttonType' => 'ajaxSubmit',
     'label'=>'Add API',
     'type'=>'primary', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
     'size'=>'mini', // null, 'large', 'small' or 'mini'
 ));
+*/
 
-        
         ?>
-        <a href="#" class="add-row">Add Key</a>
+
+<script type="text/javascript">
+// here is the magic
+function addApi()
+{
+        <?php
+         echo CHtml::ajax(array(
+            'url'=>array('profile/addapi'),
+            'data'=> "js:$(this).serialize()",
+            'type'=>'post',
+            'dataType'=>'json',
+            'error'=>"function(request,error) { console.log(request, error); }",
+            'success'=>"function(data)
+            {
+                if (data.status == 'failure')
+                {
+                    $('#dialogApi div.divForForm').html(data.div);
+                          // Here is the trick: on submit-> once again this function!
+                    $('#dialogApi div.divForForm form').submit(addApi);
+                }
+                else
+                {
+                    $('#dialogApi div.divForForm').html(data.div);
+                    $.fn.yiiGridView.update('keys-grid');
+                    setTimeout(\"$('#dialogApi').dialog('close') \",3000);
+                }
+ 
+            } ",
+            ));
+
+
+ ?>
+}
+ 
+</script>
+
+<?php echo CHtml::link('Add New API', "addapi"  // the link for open the dialog
+    /* todo: fix ajax dialog stuff
+    , array(
+        'style'=>'cursor: pointer; text-decoration: underline;',
+        'onclick'=>"{addApi(); $('#dialogApi').dialog('open');}") 
+    */
+        );?>
+
+<?php 
+$this->beginWidget('zii.widgets.jui.CJuiDialog',array(
+    'id'=>'dialogApi',
+    'options'=>array(
+        'title'=>Yii::t('api','Add API'),
+        'autoOpen'=>false,
+        'modal'=>true,
+        'width'=>'300',
+        'height'=>'auto',
+    ),
+ )); ?>
+ <div class="divForForm">
+</div>
+<?php $this->endWidget('zii.widgets.jui.CJuiDialog');?>
+
+<!--
+
+
+<?php echo CHtml::ajaxLink(Yii::t('api',' Add API'),$this->createUrl('profile/addapi'),array(
+        'onclick'=>'$("#apiDialog").dialog("open"); return false;',
+        'update'=>'#apiDialog'
+        ),array('id'=>'showApiDialog'));?>
 
 <script>
     $(document).ready(function(e) {
@@ -82,6 +147,8 @@ $this->breadcrumbs=array(
     });
     
 </script>
+
+-->
 <h3>Characters</h3>
 <p>The table below lists the characters associated with your API keys. to start pulling character data, 
     they must be enabled manually: simply toggle the enabled column and you're set. You can also customize 
