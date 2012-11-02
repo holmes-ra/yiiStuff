@@ -1,0 +1,1 @@
+Pre configured with yii user / rights / messaging
