@@ -34,12 +34,77 @@ class ProfileController extends Controller
 			));
 	}
 
-
-	/**
+	/*
+	 * Button functions
+	 * todo: Make sure user can modify character! If not, don't allow it
+	 * Also, may them POSTs with ajax or whatev
+	 * todo: when registering / adding api, check characters in system. If any conflicts, notify 
+	 * the user and ask that he delete the key's associated with the characters from his API page on EVEO
 	 *
+	 * todo: Perhaps put all character edits in a new CharacterControler and API edits in a KeysController. Must look into this.
+	 * Default view could be user's associated characters and keys in a gridview.
 	 */
+
+	public function actionActivateChar($id) {
+		// when activating char, default to highest apiMask available from ENABLED keys (use scopes?)
+	}
+
+	public function actionEnableChar($id) {
+		$user       = User::model()->findByPk(Yii::app()->user->id);
+		$character  = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+
+		if(count($character) === 1){
+			$character[0]->isActive = 1;
+			if ($character[0]->save()) {
+				// if this is ajax, we simply return the data and that's it
+				if (Yii::app()->request->isAjaxRequest) {
+					// todo: better ajax response
+            		echo "<strong>Save Succesful</strong>";
+            		exit;               
+       			}
+			} // todo: what if it fails? set alert?
+		}
+		// regardless of what happens, should also redirect back to profile page.
+		// set alert?
+        $this->redirect(Yii::app()->controller->module->profileUrl);
+	}
+
+	public function actionDisableChar($id) {
+		$user       = User::model()->findByPk(Yii::app()->user->id);
+		$character  = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+
+		if(count($character) === 1){
+			$character[0]->isActive = 0;
+			if ($character[0]->save()) {
+				// if this is ajax, we simply return the data and that's it
+				if (Yii::app()->request->isAjaxRequest) {
+            		echo "<strong>Save Succesful</strong>";
+            		exit;               
+       			}
+			} // todo: what if it fails? set alert?
+		}
+		// regardless of what happens, should also redirect back to profile page.
+		// set alert?
+        $this->redirect(Yii::app()->controller->module->profileUrl);
+	}
+
+	public function actionDeleteChar($id) {
+
+	}
+
+	public function actionDefaultChar($id) {
+
+	}
+
+	public function actionEnableKey($id) {
+
+	}
+
+	public function actionDisableKey($id) {
+
+	}
 	public function actionAddApi() {
-		$model=new YUtilRegisteredKey;
+		$model = new YUtilRegisteredKey;
 
 
         // Uncomment the following line if AJAX validation is needed

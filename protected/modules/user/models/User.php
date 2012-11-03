@@ -98,7 +98,10 @@ class User extends CActiveRecord
 			'profile'     => array(self::HAS_ONE, 'Profile', 'user_id'),
 			'keys'        => array(self::HAS_MANY, 'YUtilRegisteredKey', 'userID'),
 			'accountLink' => array(self::HAS_MANY, 'YAccountKeyBridge', array('keyID'=>'keyID'), 'through'=>'keys'),
-			'characters'  => array(self::HAS_MANY, 'YAccountCharacters', array('characterID'=>'characterID'), 'together' => false, 'through' => 'accountLink')
+			'characters'  => array(self::HAS_MANY, 'YAccountCharacters', array('characterID'=>'characterID'), 
+					'together' => false, 'through' => 'accountLink', 'with'=>'registered', 'group' => 'characters.characterID'),
+			'regCharacters'  => array(self::HAS_MANY, 'YUtilRegisteredCharacter', array('characterID'=>'characterID'), 
+					'together' => false, 'through' => 'accountLink'),
 		);
 		//if (isset(Yii::app()->getModule('user')->relations)) $relations = array_merge($relations, Yii::app()->getModule('user')->relations);
 		return $relations;
