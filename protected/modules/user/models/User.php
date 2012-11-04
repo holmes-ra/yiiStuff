@@ -176,7 +176,7 @@ class User extends CActiveRecord
 				'condition'=>'superuser=1',
 			),
 			'notsafe'=>array(
-				'select' => 'id, password, email, activkey, createtime, lastvisit, superuser, status',
+				'select' => 'id, password, email, activkey, createtime, lastvisit, superuser, status, defaultChar',
 			),
 		);
 	}
@@ -190,7 +190,7 @@ class User extends CActiveRecord
 	 */
 	public function defaultScope() {
 		return array(
-			'select' => 'id, email, createtime, lastvisit, superuser, status',
+			'select' => 'id, email, createtime, lastvisit, superuser, status, defaultChar',
 		);
 	}
 

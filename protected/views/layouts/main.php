@@ -21,11 +21,46 @@
 <body>
 
 <div class="container" id="page">
-
-	<div id="header">
-		<div id="logo"><?php echo CHtml::encode(Yii::app()->name); ?></div>
-	</div><!-- header -->
-
+<?php
+	
+ $this->widget('bootstrap.widgets.TbNavbar', array(
+    'type'=>'null', // null or 'inverse'
+    'brand'=>CHtml::encode(Yii::app()->name),
+    'brandUrl'=>'#',
+    'collapse'=>true, // requires bootstrap-responsive.css
+    'items'=>array(
+        array(
+            'class'=>'bootstrap.widgets.TbMenu',
+            'items'=>array(
+                array('label'=>'Home', 'url'=>Yii::app()->getBaseUrl()),
+            ),
+        ),
+        array(
+           	'class'=>'bootstrap.widgets.TbMenu',
+           	'htmlOptions'=>array('class'=>'pull-right'),
+            'type'=>'pills',
+           	'items'=>array(
+				array('label'=>'Login', 'url'=>Yii::app()->getModule('user')->loginUrl, 'visible'=>Yii::app()->user->isGuest),
+          		array('label'=>'Register', 'url'=>Yii::app()->getModule('user')->registrationUrl, 'visible'=>Yii::app()->user->isGuest),
+           	),
+       	),
+        array(
+            'class'=>'bootstrap.widgets.TbMenu',
+            'htmlOptions'=>array('class'=>'pull-right'),
+            'items'=>array(
+            	
+                array('label'=>Yii::app()->user->name, 'url'=>'#', 'visible' => !Yii::app()->user->isGuest, 'items'=>array(
+                    array('label'=>'Settings', 'url'=>Yii::app()->getModule('user')->profileUrl),
+                    array('label'=>'Logout', 'url'=>Yii::app()->getModule('user')->logoutUrl),
+                    '---',
+                    array('label'=>'Switch character', 'url'=>'#'),
+                    array('label'=>'Switch character2', 'url'=>'#'),
+                )),
+            ),
+        ),
+    ),
+)); ?>
+<!--
 	<div id="mainmenu">
 		<?php $this->widget('zii.widgets.CMenu',array(
 			'items'=>array(
@@ -38,13 +73,14 @@
 						' (' . Yii::app()->getModule('message')->getCountUnreadedMessages(Yii::app()->user->getId()) . ')' :
 						''),
 					'visible' => !Yii::app()->user->isGuest),
-				array('url'=>Yii::app()->getModule('user')->logoutUrl, 'label'=>Yii::app()->getModule('user')->t("Logout").' ('.Yii::app()->user->name.')', 'visible'=>!Yii::app()->user->isGuest),
+				array('url'=>Yii::app()->getModule('user')->logoutUrl, 'label'=>Yii::app()->getModule('user')->t("Logout").' ('.Yii::app()->user->name.' '.')', 'visible'=>!Yii::app()->user->isGuest),
 				
 				),
-		)); ?>
+		)); 
+		?>
 	</div><!-- mainmenu -->
 	<?php if(isset($this->breadcrumbs)):?>
-		<?php $this->widget('zii.widgets.CBreadcrumbs', array(
+		<?php $this->widget('bootstrap.widgets.TbBreadcrumbs', array(
 			'links'=>$this->breadcrumbs,
 		)); ?><!-- breadcrumbs -->
 	<?php endif?>

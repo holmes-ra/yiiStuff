@@ -1,9 +1,16 @@
-<?php
+    <?php
 
         // todo: for the delete button, make sure ajax does it, but if not direct to a seperate confirmation page.
         //       This will prevent people from linking the deleteChar url and deleting characters on a whim
         //       Also, make sure the proper permissions are put in place (need to be the owner of key!)
 
+$ajaxOptions = array(
+                                    'url'=>"js:$(this).attr('href')", 
+                                    'success'=> "js:function(data){
+                                        $('#charFlash').html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut('slow');
+                                        
+                                        $.fn.yiiGridView.update('char-grid'); }"  
+                                );
         $this->widget('bootstrap.widgets.TbGridView', array(
             'id'=>'char-grid',
             'type'=>'striped bordered condensed',
@@ -31,16 +38,8 @@
                             'icon'  => 'minus',
                             'url'   => 'Yii::app()->createUrl("user/profile/disableChar", array("id"=>$data->characterID))',
                             'visible' => '$data->registered !== null && $data->registered->isActive == 1',
-                            // todo: fix ajax response
                             'options'=>array(  
-                                'ajax'=>array(
-                                    'url'=>"js:$(this).attr('href')", 
-                                    'update'=>'#ajaxresponse', //display a response
-                                    'success'=> "js:function(data){
-                                        console.log(data);
-                                        $.fn.yiiGridView.update('char-grid');}"
-                                    
-                                ),
+                                'ajax'=>$ajaxOptions,
                             ),
 
                         ),
@@ -51,13 +50,7 @@
                             'url'   => 'Yii::app()->createUrl("user/profile/enableChar", array("id"=>$data->characterID))',
                             'visible' => '$data->registered !== null && $data->registered->isActive == 0',
                             'options'=>array(  
-                                'ajax'=>array(
-                                    'url'=>"js:$(this).attr('href')", 
-                                    'update'=>'#ajaxresponse', //display a response 
-                                    'success'=> "js:function(data){
-                                        console.log(data);
-                                        $.fn.yiiGridView.update('char-grid');}"
-                                ),
+                                'ajax'=>$ajaxOptions,
                             ),
                         ),                        
                         'activate' => array
@@ -72,7 +65,10 @@
                             'label' => 'Make Default',
                             'icon'  => 'user',
                             'url'   => 'Yii::app()->createUrl("user/profile/defaultChar", array("id"=>$data->characterID))',
-                            'visible' => '$data->registered !== null' // todo: && $User->defaultChar != $data->characterID'
+                            'visible' => '$data->registered !== null', // @todo: && $User->defaultChar != $data->characterID'
+                            'options'=>array(  
+                                'ajax'=>$ajaxOptions,
+                            ),
                         ),      
                     ),
                 ),

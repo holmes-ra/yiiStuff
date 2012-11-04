@@ -1,3 +1,4 @@
+
 <div class="form" id="apiDialogForm">
  
 <?php $form = $this->beginWidget('CActiveForm', array(

@@ -1,6 +1,6 @@
-<?php $this->pageTitle=Yii::app()->name . ' - '.UserModule::t("Settings");
+<?php $this->pageTitle=Yii::app()->name . ' - '.UserModule::t("Add API");
 $this->breadcrumbs=array(
-	UserModule::t("Settings"),
+	UserModule::t("Add API"),
 );
 ?><h2><?php echo UserModule::t('User Settings'); ?></h2>
 <?php echo $this->renderPartial('menu'); ?>
@@ -14,4 +14,4 @@ $this->breadcrumbs=array(
 <h3>Add API</h3>
 
 
-<?php echo $this->renderPartial('_formDialog', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_addApi', array('model'=>$model)); ?>

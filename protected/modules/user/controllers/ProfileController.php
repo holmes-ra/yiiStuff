@@ -36,72 +36,140 @@ class ProfileController extends Controller
 
 	/*
 	 * Button functions
-	 * todo: Make sure user can modify character! If not, don't allow it
+	 * @todo Make sure user can modify character! If not, don't allow it
 	 * Also, may them POSTs with ajax or whatev
-	 * todo: when registering / adding api, check characters in system. If any conflicts, notify 
+	 * @todo when registering / adding api, check characters in system. If any conflicts, notify 
 	 * the user and ask that he delete the key's associated with the characters from his API page on EVEO
 	 *
-	 * todo: Perhaps put all character edits in a new CharacterControler and API edits in a KeysController. Must look into this.
+	 * @todo Perhaps put all character edits in a new CharacterControler and API edits in a KeysController. Must look into this.
 	 * Default view could be user's associated characters and keys in a gridview.
 	 */
 
+	// Light function to keep code clean.
+	protected function showFlash() {
+		$this->widget('bootstrap.widgets.TbAlert', array(
+      		'block'=>true, // display a larger alert block?
+       		'fade'=>true, // use transitions?
+		    'closeText'=>'&times;', // close link text - if set to false, no close link is displayed
+		));
+	}
+
 	public function actionActivateChar($id) {
 		// when activating char, default to highest apiMask available from ENABLED keys (use scopes?)
+		// also, check to see if there is a charater already in registered table. If there is, raise warning and display info to user about keys associated with character
 	}
 
 	public function actionEnableChar($id) {
-		$user       = User::model()->findByPk(Yii::app()->user->id);
-		$character  = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$user      = User::model()->findByPk(Yii::app()->user->id);
+		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
 
-		if(count($character) === 1){
+		if(count($character) === 1) {
 			$character[0]->isActive = 1;
 			if ($character[0]->save()) {
-				// if this is ajax, we simply return the data and that's it
-				if (Yii::app()->request->isAjaxRequest) {
-					// todo: better ajax response
-            		echo "<strong>Save Succesful</strong>";
-            		exit;               
-       			}
-			} // todo: what if it fails? set alert?
+				Yii::app()->user->setFlash('success', $character[0]->characterName." was enabled! Data will be polled from API servers momentarily."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			} // @todo what if it fails? set alert?
+		} else {
+			// @fixme: maybe throw invalid input exception or soemthing?
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
 		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
 		// regardless of what happens, should also redirect back to profile page.
 		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDisableChar($id) {
-		$user       = User::model()->findByPk(Yii::app()->user->id);
-		$character  = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$user      = User::model()->findByPk(Yii::app()->user->id);
+		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
 
-		if(count($character) === 1){
+		if(count($character) === 1) {
 			$character[0]->isActive = 0;
 			if ($character[0]->save()) {
-				// if this is ajax, we simply return the data and that's it
-				if (Yii::app()->request->isAjaxRequest) {
-            		echo "<strong>Save Succesful</strong>";
-            		exit;               
-       			}
-			} // todo: what if it fails? set alert?
+				Yii::app()->user->setFlash('info', $character[0]->characterName." was successfully disabled. API data will no longer be polled from this character."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			} // @todo what if it fails? set alert?
+		} else {
+			// @fixme: maybe throw invalid input exception or soemthing?
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
 		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
 		// regardless of what happens, should also redirect back to profile page.
 		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDeleteChar($id) {
+		// if default character, change
 
 	}
 
 	public function actionDefaultChar($id) {
+		$user      = User::model()->findByPk(Yii::app()->user->id);
+		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
 
+		if(count($character) === 1){
+			$user->defaultChar = $character[0]->characterID;
+			if ($user->update()) {
+				// if this is ajax, we simply return the data and that's it
+				if (Yii::app()->request->isAjaxRequest) {
+					// @todo better ajax response
+            		echo "<strong>Save Succesful</strong>";
+            		exit;               
+       			}
+			} // @todo what if it fails? set alert?
+		}
+		// regardless of what happens, should also redirect back to profile page.
+		// set alert?
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionEnableKey($id) {
+		$user = User::model()->findByPk(Yii::app()->user->id);
+		$key  = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
 
+		if(count($key) === 1){
+			$key[0]->isActive = 1;
+			if ($key[0]->save()) {
+				// if this is ajax, we simply return the data and that's it
+				if (Yii::app()->request->isAjaxRequest) {
+            		echo "<strong>Save Succesful</strong>";
+            		exit;               
+       			}
+			} // @todo what if it fails? set alert?
+		}
+		// regardless of what happens, should also redirect back to profile page.
+		// set alert?
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDisableKey($id) {
+		$user = User::model()->findByPk(Yii::app()->user->id);
+		$key  = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
 
+		if(count($key) === 1){
+			$key[0]->isActive = 0;
+			if ($key[0]->save()) {
+				// if this is ajax, we simply return the data and that's it
+				if (Yii::app()->request->isAjaxRequest) {
+            		echo "<strong>Save Succesful</strong>";
+            		exit;               
+       			}
+			} // @todo what if it fails? set alert?
+		}
+		// regardless of what happens, should also redirect back to profile page.
+		// set alert?
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 	public function actionAddApi() {
 		$model = new YUtilRegisteredKey;
@@ -134,7 +202,7 @@ class ProfileController extends Controller
         {
             echo CJSON::encode(array(
                 'status'=>'failure', 
-                'div'=>$this->renderPartial('_formDialog', array('model'=>$model), true)));
+                'div'=>$this->renderPartial('_addApi', array('model'=>$model), true)));
             exit;               
         }
         else {

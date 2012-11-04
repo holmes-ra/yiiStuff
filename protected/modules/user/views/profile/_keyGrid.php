@@ -1,3 +1,4 @@
+<div id='keyresponse'></div>
 <?php  
         $this->widget('bootstrap.widgets.TbGridView', array(
             'id'=>'keys-grid',
@@ -23,14 +24,33 @@
                             'label' => 'Disable',
                             'icon'  => 'minus',
                             'url'   => 'Yii::app()->createUrl("user/profile/disableKey", array("id"=>$data->keyID))',
-                            'visible' => '$data->isActive == 1'
+                            'visible' => '$data->isActive == 1',
+                            'options'=>array(  
+                                'ajax'=>array(
+                                    'url'=>"js:$(this).attr('href')", 
+                                    'update'=>'#keyresponse', //display a response
+                                    'success'=> "js:function(data){
+                                        console.log(data);
+                                        $.fn.yiiGridView.update('keys-grid');}"
+                                    
+                                ),
+                            ),
                         ),
                         'enable' => array
                         (
                             'label' => 'Enable',
                             'icon'  => 'plus',
                             'url'   => 'Yii::app()->createUrl("user/profile/enableKey", array("id"=>$data->keyID))',
-                            'visible' => '$data->isActive == 0'
+                            'visible' => '$data->isActive == 0',
+                            'options'=>array(  
+                                'ajax'=>array(
+                                    'url'=>"js:$(this).attr('href')", 
+                                    'update'=>'#keyresponse', //display a response
+                                    'success'=> "js:function(data){
+                                        console.log(data);
+                                        $.fn.yiiGridView.update('keys-grid');}"
+                                ),
+                            ),
                         ),  
                     ),
                 ),
@@ -73,7 +93,9 @@ function addApi()
 
 </script>
 
-<?php echo CHtml::link('Add New API', "addapi"  // the link for open the dialog
+<?php 
+// @todo: model dialog
+echo CHtml::link('Add New API', "profile/addapi"  // the link for open the dialog
     /* todo: fix ajax dialog stuff
     , array(
         'style'=>'cursor: pointer; text-decoration: underline;',
