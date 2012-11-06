@@ -61,6 +61,20 @@ class YUtilAccessMask extends CActiveRecord
 		);
 	}
 
+	public function scopes()
+    {
+        return array(
+            'char'=>array(
+                'condition'=>'section LIKE \'char\'',
+                'limit'=> false,
+            ),
+            'corp'=>array(
+                'condition'=>'section=corp',
+                'limit'=>false,
+            ),
+        );
+    }
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */

@@ -9,6 +9,24 @@ $this->pageTitle=Yii::app()->name;
 <?php 
 
 
+// wallet transactions, account balance, skill queue = 4456449
+
+
+
+$roles = 4456449;
+var_dump($roles & 16384);
+
+echo log(134217728, 2);
+$digits='01';
+$bits='';
+bcscale(0);
+while ($roles) {
+	$bits.=$digits[bcmod($roles,2)];
+	$roles=bcdiv($roles,2);
+};
+$bitRoles = str_pad($bits, 64, '0', STR_PAD_RIGHT);
+echo $bitRoles;
+
 //$key = new YUtilRegisteredKey; 
 //$key = new Pheal("1408234", "lPFzZCxrBLyJFQDpYyDGO0gGPJVZJUcVYFfW5Yyk4npOxUGZpMcwpW8ak8deikxe");
 //$users=User::model()->with('characters')->findByPk(Yii::app()->user->id);

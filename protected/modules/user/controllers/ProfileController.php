@@ -34,6 +34,25 @@ class ProfileController extends Controller
 			));
 	}
 
+	// @todo this leaves the URL as type/char/id/112345, find better URL management for this
+	public function actionAccess($type, $id) {		
+		$user = User::model()->findByPk(Yii::app()->user->id);
+
+		if ($type === 'char') {
+			$model = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		} else if ($type === 'key') {
+			// if key is account, use char. if corp, use corp
+			$model = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
+		}
+		if ($model) {
+			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
+			$this->renderPartial('_access', array(
+					'model'         => $model,
+					'dataProvider'  => $dataProvider,
+				));
+		}
+		
+	}
 	/*
 	 * Button functions
 	 * @todo Make sure user can modify character! If not, don't allow it
