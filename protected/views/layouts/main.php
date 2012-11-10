@@ -22,20 +22,21 @@
 
 <div class="container" id="page">
 <?php
-$array = array();
-
 $menu = array(
    array('label'=>'Settings', 'url'=>Yii::app()->getModule('user')->profileUrl),
    array('label'=>'Logout', 'url'=>Yii::app()->getModule('user')->logoutUrl),
-   '---',
 );
-/*
+
 if (!Yii::app()->user->isGuest) {
-	foreach (Yii::app()->user->characters AS $char) {
-		$menu[] = array('label'=>$char->characterName, 'url'=>Yii::app()->createUrl("/user/profile/switch", array("id"=>$char->characterID)));
+	$chars = Yii::app()->user->characters;
+	if (is_array($chars)) {
+		$menu[] = '---';
+		foreach (Yii::app()->user->characters AS $char) {
+			$menu[] = array('label'=>$char->characterName, 'url'=>Yii::app()->createUrl("/user/profile/switch", array("id"=>$char->characterID)));
+		}
 	}
 }
-/**/
+
  $this->widget('bootstrap.widgets.TbNavbar', array(
     'type'=>'null', // null or 'inverse'
     'brand'=>CHtml::encode(Yii::app()->name),

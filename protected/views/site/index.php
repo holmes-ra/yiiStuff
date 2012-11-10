@@ -3,15 +3,8 @@
 
 $this->pageTitle=Yii::app()->name;
 ?>
-<pre>
+
 <?php 
-
-echo Yii::app()->user->name;
-var_dump(Yii::app()->user->isCharacter);
-if (Yii::app()->user->isCharacter) {
-	echo Yii::app()->user->charID;
-}
-
 
 $this->widget('bootstrap.widgets.TbCarousel', array(
   'items'=>array(
@@ -35,8 +28,9 @@ $this->widget('bootstrap.widgets.TbCarousel', array(
 			'Nullam id dolor id nibh ultricies vehicula ut id elit.'),
   ),
 ));
+?>
+<pre><?php
 
-print_r(Yii::app()->user);
 
 ?>
 </pre>

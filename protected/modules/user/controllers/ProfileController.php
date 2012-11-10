@@ -33,6 +33,11 @@ class ProfileController extends Controller
 			));
 	}
 
+	public function actionSwitch($id) {
+		Yii::app()->user->switchChar($id);
+		$this->redirect(Yii::app()->controller->module->profileUrl);
+	}
+
 	// Only allow access mask modification to characters.
 	public function actionAccess($charID) {
 		$user = User::model()->findByPk(Yii::app()->user->id);
@@ -345,7 +350,6 @@ class ProfileController extends Controller
 			$this->render('changepassword', array('model'=>$model));
 		}
 	}
-
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
