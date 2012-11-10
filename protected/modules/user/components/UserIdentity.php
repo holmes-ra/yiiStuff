@@ -27,10 +27,8 @@ class UserIdentity extends CUserIdentity
 		else if($user->status==-1)
 			$this->errorCode=self::ERROR_STATUS_BAN;
 		else {
+			$this->username  = $user->email;
 			$this->_id       = $user->id;
-			$this->username  = $user->email; // or default character
-			$this->setState('defaultChar', $user->defaultChar);
-			$this->setState('charName', $user->defaultChar);
 			$this->errorCode = self::ERROR_NONE;
 		}
 		return !$this->errorCode;

@@ -144,6 +144,26 @@ class YUtilRegisteredCharacter extends CActiveRecord
 		);
 	}
 
+	// @todo: I tried to find a way to do this with relations and scopes (ie: the Yii way)
+	// however it proved to be too difficult or even impossible withthe way Yii is designed
+	// look into this at a later time and see if it can be done better.
+	public function getAvailableBitmask($userID, $charID) 
+	{
+		$sql = "
+			SELECT BIT_OR(`activeAPIMask`)
+			FROM `yapeal_utilRegisteredKey` `t` 
+			LEFT OUTER JOIN `yapeal_accountKeyBridge` t2 ON (`t`.`keyID` = `t2`.`keyID`) 
+			WHERE 
+			(`t`.`userID`= :userID) AND 
+			(`t2`.`characterID` = :charID) AND
+			(`t`.`isActive` = 1)";
+
+   		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindParam(':userID', $userID);
+		$command->bindParam(':charID', $charID);
+		return $command->queryScalar();
+	}
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.

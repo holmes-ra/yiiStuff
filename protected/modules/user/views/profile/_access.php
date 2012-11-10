@@ -1,7 +1,10 @@
-<pre><?php
+<?php
 //print_r($model);
 //exit;
-$dataProvider->setPagination(false);
+
+
+
+//$dataProvider->setPagination(false);
 
 $this->widget('bootstrap.widgets.TbGridView', array(
     'dataProvider'=>$dataProvider,

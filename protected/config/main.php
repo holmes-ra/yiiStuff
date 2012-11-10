@@ -13,7 +13,7 @@
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'what this is I don\'t even',
+	'name'=>'eveFrame',
 	'theme'=>'',
 	// preloading 'log' component
 	'preload'=>array('log','bootstrap'),
@@ -80,13 +80,17 @@ return array(
 
 		// application components
 		'components'=>array(
+			'assetManager'=>array(
+            	'linkAssets' => true,
+			),
+
 			'bootstrap' => array(
 				'class' => 'ext.bootstrap.components.Bootstrap',
 				'responsiveCss' => true,
 			),
 
 			'user'=>array(
-				'class'=>'RWebUser',
+				'class'=>'UWebUser',
 				// enable cookie-based authentication
 				'allowAutoLogin'=>true,
 				'loginUrl'=>array('/user/login'),
@@ -115,6 +119,8 @@ return array(
 				'password' => 'myPassword',
 				'charset' => 'utf8',
 				'tablePrefix' => '',
+				'enableParamLogging' => true,
+
 			),
 
 			'errorHandler'=>array(

@@ -44,6 +44,9 @@ class UserController extends Controller
 			'model'=>$model,
 		));
 	}
+	public function actionSwitch($id) {
+			print "lol";exit;
+	}
 
 	/**
 	 * Lists all models.

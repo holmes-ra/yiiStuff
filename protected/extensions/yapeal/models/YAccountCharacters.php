@@ -54,7 +54,8 @@ class YAccountCharacters extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'registered' => array(self::HAS_ONE, 'YUtilRegisteredCharacter', 'characterID')
+			'registered' => array(self::HAS_ONE, 'YUtilRegisteredCharacter', 'characterID'),
+			// 'keys'       => array(self::MANY_MANY, 'YUtilRegisteredKey', 'yapeal_accountKeyBridge(keyID, characterID)'),
 		);
 	}
 

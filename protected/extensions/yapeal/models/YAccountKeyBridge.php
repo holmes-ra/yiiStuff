@@ -54,7 +54,7 @@ class YAccountKeyBridge extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'key' => array(self::BELONGS_TO, 'YUtilRegisteredKey', 'keyID'),
+			'key'     => array(self::BELONGS_TO, 'YUtilRegisteredKey', 'keyID'),
 		);
 	}
 

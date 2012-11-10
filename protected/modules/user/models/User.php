@@ -67,24 +67,6 @@ class User extends CActiveRecord
 				//array('createtime, lastvisit, superuser, status', 'numerical', 'integerOnly'=>true),
 
 		);
-
-		/* Do not need this yet, commented out for developing
-		
-		return ((Yii::app()->getModule('user')->isAdmin())?array(
-				array('password, email', 'required'),
-				array('password', 'length', 'max'=>128, 'min' => 4, 'message' => UserModule::t("Incorrect password (minimal length 4 symbols).")),
-				array('email', 'email'),
-				array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-				array('status', 'in', 'range'=>array(self::STATUS_NOACTIVE, self::STATUS_ACTIVE, self::STATUS_BANED)),
-				array('superuser', 'in', 'range'=>array(0, 1)),
-				array('email, createtime, lastvisit, superuser, status', 'required'),
-				array('createtime, lastvisit, superuser, status', 'numerical', 'integerOnly'=>true),
-			):((Yii::app()->user->id==$this->id)?array(
-					array('email', 'required'),
-					array('email', 'email'),
-					array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-				):array()));
-		*/
 	}
 
 
@@ -120,6 +102,8 @@ class User extends CActiveRecord
 			),
 		);
 	}
+
+	
 
 	public static function keysDataProvider($user = null) {
 		if ($user === null) { $user = Yii::app()->user->id; }

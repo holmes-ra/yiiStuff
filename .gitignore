@@ -1,6 +1,6 @@
 protected/runtime
 cache/
-phpDoc
+phpDoc/
 
 # Compiled source #
 ###################

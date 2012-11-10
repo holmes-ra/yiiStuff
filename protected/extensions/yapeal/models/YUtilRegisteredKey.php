@@ -92,7 +92,12 @@ class YUtilRegisteredKey extends CActiveRecord
 			'userID' => 'User',
 		);
 	}
-
+	
+	public function scopes()
+    {
+        return array();
+    }
+	
 	public function behaviors() {
 		return array(
 			'withRelated'=>array(

@@ -21,7 +21,6 @@ class ProfileController extends Controller
 	 * Shows a particular model.
 	 */
 	public function actionProfile() {
-		Yii::log('hi there', 'info', 'system.web.CController');
 
 		$model  = $this->loadUser();
 		$keyDP  = User::keysDataProvider(Yii::app()->user->id);
@@ -34,25 +33,34 @@ class ProfileController extends Controller
 			));
 	}
 
-	// @todo this leaves the URL as type/char/id/112345, find better URL management for this
-	public function actionAccess($type, $id) {		
+	// Only allow access mask modification to characters.
+	public function actionAccess($charID) {
 		$user = User::model()->findByPk(Yii::app()->user->id);
+		$char = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$charID)));
 
-		if ($type === 'char') {
-			$model = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
-		} else if ($type === 'key') {
-			// if key is account, use char. if corp, use corp
-			$model = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
-		}
-		if ($model) {
+		if ($char[0]) {
+			/*echo "<pre>";
+			print_r($char); exit;	*/
+			$availableMask = YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $charID);
+			
+			if (isset($_POST['mask'])){
+				$mask = array_reduce($_POST['mask'], function($a, $b) { return $a | $b; });
+				$mask = $mask & $availableMask; // only apply what character can use
+				$char[0]->activeAPIMask = $mask;
+				if ($char[0]->update()){
+					Yii::app()->user->setFlash('success', "New mask <b>".$mask."</b> for ".$char[0]->characterName);
+				}
+			}
+
 			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
-			$this->renderPartial('_access', array(
-					'model'         => $model,
+			$this->render('access', array(
+					'char'          => $char,
 					'dataProvider'  => $dataProvider,
+					'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $charID),
 				));
 		}
-		
 	}
+
 	/*
 	 * Button functions
 	 * @todo Make sure user can modify character! If not, don't allow it
@@ -74,8 +82,33 @@ class ProfileController extends Controller
 	}
 
 	public function actionActivateChar($id) {
-		// when activating char, default to highest apiMask available from ENABLED keys (use scopes?)
-		// also, check to see if there is a charater already in registered table. If there is, raise warning and display info to user about keys associated with character
+		// Make sure activating char is indeed a character owned by user
+		$user      = User::model()->findByPk(Yii::app()->user->id);
+		$character = $user->characters(array('condition' => 'characters.characterID = :id', 'params'=>array(':id'=>$id)));
+
+		$new = YUtilRegisteredCharacter::model()->findByPk($id);
+		if (!$new) {
+			$new = new YUtilRegisteredCharacter;
+			$new->characterID   = $id;
+			$new->isActive      = 1;
+			$new->characterName = $character[0]->characterName;
+			$new->activeAPIMask = $new->getAvailableBitmask(Yii::app()->user->id, $id);
+			if ($new->save()){
+				Yii::app()->user->setFlash('success', $character[0]->characterName." was activated! Data will be polled from API servers momentarily."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			}
+		} 
+		else {
+			// @todo if character is already activated, raise better warning and display info to user about keys associated with
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Character is already registered. This could mean someone else is using your API keys.');
+		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionEnableChar($id) {
@@ -89,7 +122,7 @@ class ProfileController extends Controller
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
-			} // @todo what if it fails? set alert?
+			}
 		} else {
 			// @fixme: maybe throw invalid input exception or soemthing?
 			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
@@ -99,7 +132,6 @@ class ProfileController extends Controller
             exit;               
        	}
 		// regardless of what happens, should also redirect back to profile page.
-		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
@@ -114,7 +146,7 @@ class ProfileController extends Controller
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
-			} // @todo what if it fails? set alert?
+			} // @todo
 		} else {
 			// @fixme: maybe throw invalid input exception or soemthing?
 			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
@@ -124,13 +156,30 @@ class ProfileController extends Controller
             exit;               
        	}
 		// regardless of what happens, should also redirect back to profile page.
-		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDeleteChar($id) {
-		// if default character, change
-
+		// @todo: if default character, change
+		$user      = User::model()->findByPk(Yii::app()->user->id);
+		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		if(count($character) === 1) {
+			if ($character[0]->delete()) {
+				Yii::app()->user->setFlash('info', $character[0]->characterName." was successfully deleted, along with all data associated with character."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			}
+		} else {
+			// @fixme: maybe throw invalid input exception or soemthing?
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
+		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
+		// regardless of what happens, should also redirect back to profile page.
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDefaultChar($id) {
@@ -146,10 +195,9 @@ class ProfileController extends Controller
             		echo "<strong>Save Succesful</strong>";
             		exit;               
        			}
-			} // @todo what if it fails? set alert?
+			}
 		}
 		// regardless of what happens, should also redirect back to profile page.
-		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
@@ -165,10 +213,9 @@ class ProfileController extends Controller
             		echo "<strong>Save Succesful</strong>";
             		exit;               
        			}
-			} // @todo what if it fails? set alert?
+			}
 		}
 		// regardless of what happens, should also redirect back to profile page.
-		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
@@ -184,12 +231,18 @@ class ProfileController extends Controller
             		echo "<strong>Save Succesful</strong>";
             		exit;               
        			}
-			} // @todo what if it fails? set alert?
+			}
 		}
 		// regardless of what happens, should also redirect back to profile page.
-		// set alert?
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
+
+	public function actionDeleteKey($id) {
+		// @todo: funtion. When deleting key, go through characters accociated with key that are also in utilRegChars. 
+		// If any are found, see if character is associated with another key -by the same user (?)- and if so, update 
+		// characters active API to include LIKE (?) calls. if no characters are found, delete from utilRegChars
+	}
+
 	public function actionAddApi() {
 		$model = new YUtilRegisteredKey;
 
@@ -226,7 +279,7 @@ class ProfileController extends Controller
         }
         else {
             $this->render('addApi',array('model'=>$model,)); }
-}
+	}
 
 
 
@@ -310,6 +363,4 @@ class ProfileController extends Controller
 		}
 		return $this->_model;
 	}
-
-
 }

@@ -25,7 +25,10 @@ $columns = array(
                 (
                     'label' => 'Delete',
                     'url'   => 'Yii::app()->createUrl("user/profile/deleteChar", array("id"=>$data->characterID))',
-                    'visible' => '$data->registered !== null'
+                    'visible' => '$data->registered !== null',
+                    'options'=>array(  
+                        'ajax'=>$ajaxOptions,
+                    ),
                 ),
                 'disable' => array
                 (
@@ -52,7 +55,10 @@ $columns = array(
                     'label' => 'Activate',
                     'icon'  => 'ok',
                     'url'   => 'Yii::app()->createUrl("user/profile/activateChar", array("id"=>$data->characterID))',
-                    'visible' => '$data->registered === null'
+                    'visible' => '$data->registered === null',
+                    'options'=>array(  
+                        'ajax'=>$ajaxOptions,
+                    ),
                 ),      
                 'default' => array
                 (
