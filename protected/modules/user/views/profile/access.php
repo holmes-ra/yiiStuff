@@ -15,7 +15,14 @@ $this->widget('bootstrap.widgets.TbAlert', array(
 /*
 echo "Avaialble bitmask: ".$availableMask."<br/>";
 echo "character active mask: ".$char[0]->activeAPIMask;
+
 */
+$this->renderPartial('_access', array(
+                    'char'          => $char,
+                    'dataProvider'  => $dataProvider,
+                    'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $char[0]->characterID),
+                ));
+/*
 $form=$this->beginWidget('CActiveForm', array(
         'id'=>'campaign-search-form',
         'enableAjaxValidation'=>false,
@@ -51,4 +58,4 @@ $this->widget('bootstrap.widgets.TbButtonGroup', array(
     ),
 ));
 $this->endWidget();
-
+*/

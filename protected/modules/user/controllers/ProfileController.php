@@ -39,29 +39,45 @@ class ProfileController extends Controller
 	}
 
 	// Only allow access mask modification to characters.
-	public function actionAccess($charID) {
+	// @fixme: OH GOD PLEASE FIX ME.
+	public function actionAccess($id) {
 		$user = User::model()->findByPk(Yii::app()->user->id);
-		$char = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$charID)));
+		$char = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
 
 		if ($char[0]) {
 			/*echo "<pre>";
 			print_r($char); exit;	*/
-			$availableMask = YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $charID);
+			$availableMask = YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id);
 			
 			if (isset($_POST['mask'])){
 				$mask = array_reduce($_POST['mask'], function($a, $b) { return $a | $b; });
 				$mask = $mask & $availableMask; // only apply what character can use
 				$char[0]->activeAPIMask = $mask;
 				if ($char[0]->update()){
+					if (Yii::app()->request->isAjaxRequest) {
+                    	echo CJSON::encode(array(
+                        	'status'=>'success', 
+	                        'div'=>"Classroom successfully added"
+                        	));
+                    	exit;               
+                	}
 					Yii::app()->user->setFlash('success', "New mask <b>".$mask."</b> for ".$char[0]->characterName);
 				}
 			}
-
 			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'status'=>'failure', 
+                	'div'=>$this->render('_access', array(
+                		'char'=>$char,
+                		'dataProvider'  => $dataProvider,
+						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true)));
+	            		exit;               
+        	}
 			$this->render('access', array(
 					'char'          => $char,
 					'dataProvider'  => $dataProvider,
-					'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $charID),
+					'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id),
 				));
 		}
 	}
@@ -194,14 +210,19 @@ class ProfileController extends Controller
 		if(count($character) === 1){
 			$user->defaultChar = $character[0]->characterID;
 			if ($user->update()) {
-				// if this is ajax, we simply return the data and that's it
-				if (Yii::app()->request->isAjaxRequest) {
-					// @todo better ajax response
-            		echo "<strong>Save Succesful</strong>";
-            		exit;               
-       			}
-			}
+				Yii::app()->user->setFlash('info', "<strong>".$character[0]->characterName."</strong> has been set to the default character."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			}     
+       	} else {
+			// @fixme: maybe throw invalid input exception or soemthing?
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
 		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
 		// regardless of what happens, should also redirect back to profile page.
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}

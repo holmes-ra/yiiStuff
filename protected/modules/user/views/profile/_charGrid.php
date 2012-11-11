@@ -65,7 +65,7 @@ $columns = array(
                     'label' => 'Make Default',
                     'icon'  => 'user',
                     'url'   => 'Yii::app()->createUrl("user/profile/defaultChar", array("id"=>$data->characterID))',
-                    'visible' => '$data->registered !== null', // @todo: && $User->defaultChar != $data->characterID'
+                    'visible' => '$data->registered !== null && '.$user->defaultChar.' != $data->characterID',
                     'options'=>array(  
                         'ajax'=>$ajaxOptions,
                     ),
@@ -88,4 +88,5 @@ $this->widget('bootstrap.widgets.TbExtendedGridView', array(
         )
     ),$columns),
 ));
+
 ?>
