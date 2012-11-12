@@ -34,11 +34,13 @@ $this->widget('bootstrap.widgets.TbGridView', array(
     ),
 ));
 
-$this->widget('bootstrap.widgets.TbButtonGroup', array(
-    'buttons'=>array(
-        array('buttonType'=>'submit', 'label' => 'Edit','type' => 'primary'),
-    ),
-));
+//$this->widget('bootstrap.widgets.TbButtonGroup', array(
+ //   'buttons'=>array(
+   //     array('buttonType'=>'submit', 'label' => 'Edit','type' => 'primary'),
+ //   ),
+//));
+echo CHtml::ajaxSubmitButton("go");
+
 $this->endWidget();
 
 

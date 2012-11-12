@@ -55,9 +55,11 @@ class ProfileController extends Controller
 				$char[0]->activeAPIMask = $mask;
 				if ($char[0]->update()){
 					if (Yii::app()->request->isAjaxRequest) {
+						Yii::app()->clientScript->scriptMap['jquery.js'] = false;
+            			Yii::app()->clientScript->scriptMap['jquery-ui.min.js'] = false;
                     	echo CJSON::encode(array(
                         	'status'=>'success', 
-	                        'div'=>"Classroom successfully added"
+	                        'div'=>"API Access Mask successfully updated!"
                         	));
                     	exit;               
                 	}
@@ -66,12 +68,14 @@ class ProfileController extends Controller
 			}
 			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
 			if (Yii::app()->request->isAjaxRequest) {
+				Yii::app()->clientScript->scriptMap['jquery.js'] = false;
+            	Yii::app()->clientScript->scriptMap['jquery-ui.min.js'] = false;
             	echo CJSON::encode(array(
                 	'status'=>'failure', 
-                	'div'=>$this->render('_access', array(
+                	'div'=>$this->renderPartial('_accessDialog', array(
                 		'char'=>$char,
                 		'dataProvider'  => $dataProvider,
-						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true)));
+						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true, true)));
 	            		exit;               
         	}
 			$this->render('access', array(

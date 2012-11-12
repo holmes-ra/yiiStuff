@@ -43,8 +43,11 @@ $this->beginWidget('zii.widgets.jui.CJuiDialog', array( // the dialog
         'title'=>'Access',
         'autoOpen'=>false,
         'modal'=>true,
-        'width'=>1000,
-        'height'=>670,
+        'width'=>350,
+        'height'=>500,
+        'show'=> array('effect'=>"fade"),
+        'hide'=>array('effect'=>"fade"),
+
     ),
 ));?>
 <div class="divForForm"></div>
@@ -72,8 +75,7 @@ function editAccess()
             'data'=> "js:$(this).serialize()",
             'type'=>'post',
             'dataType'=>'json',
-            'success'=>"function(data)
-            {
+            'success'=>"function(data) {
                 if (data.status == 'failure')
                 {
                     $('#accessDialog div.divForForm').html(data.div);

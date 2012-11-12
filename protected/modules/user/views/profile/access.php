@@ -17,7 +17,7 @@ echo "Avaialble bitmask: ".$availableMask."<br/>";
 echo "character active mask: ".$char[0]->activeAPIMask;
 
 */
-$this->renderPartial('_access', array(
+$this->renderPartial('_accessDialog', array(
                     'char'          => $char,
                     'dataProvider'  => $dataProvider,
                     'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $char[0]->characterID),
