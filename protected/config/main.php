@@ -80,6 +80,10 @@ return array(
 
 		// application components
 		'components'=>array(
+			'clientScript' => array(
+    			'class' => 'ext.NLSClientScript',
+    		),
+    			
 			'assetManager'=>array(
             	'linkAssets' => true,
 			),
@@ -135,11 +139,11 @@ return array(
 						'levels'=>'error, warning',
 					),
 					// uncomment the following to show log messages on web pages
-					
+				/*	
 				array(
 					'class'=>'CWebLogRoute',
 				),
-				
+				/**/
 				),
 			),
 		),

@@ -55,8 +55,7 @@ class ProfileController extends Controller
 				$char[0]->activeAPIMask = $mask;
 				if ($char[0]->update()){
 					if (Yii::app()->request->isAjaxRequest) {
-						Yii::app()->clientScript->scriptMap['jquery.js'] = false;
-            			Yii::app()->clientScript->scriptMap['jquery-ui.min.js'] = false;
+
                     	echo CJSON::encode(array(
                         	'status'=>'success', 
 	                        'div'=>"API Access Mask successfully updated!"
@@ -68,8 +67,6 @@ class ProfileController extends Controller
 			}
 			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
 			if (Yii::app()->request->isAjaxRequest) {
-				Yii::app()->clientScript->scriptMap['jquery.js'] = false;
-            	Yii::app()->clientScript->scriptMap['jquery-ui.min.js'] = false;
             	echo CJSON::encode(array(
                 	'status'=>'failure', 
                 	'div'=>$this->renderPartial('_accessDialog', array(

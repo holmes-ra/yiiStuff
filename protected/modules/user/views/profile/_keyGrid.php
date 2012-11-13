@@ -5,6 +5,7 @@
             'type'=>'striped bordered condensed',
             'dataProvider'=>$keysDataProvider,
             'template'=>"{items}",
+            'selectableRows' => 0,
             'columns'=>array(
                 array('name'=>'Status', 'value'=>'$data->isActive ? "Enabled" : "Disabled"'),
                 array('name'=>'keyID', 'header'=>'Key'),
@@ -103,7 +104,7 @@ echo CHtml::link('Add New API', "profile/addapi"  // the link for open the dialo
     */
         );?>
 
-<?php 
+<?php /*
 $this->beginWidget('zii.widgets.jui.CJuiDialog',array(
     'id'=>'dialogApi',
     'options'=>array(
@@ -116,4 +117,4 @@ $this->beginWidget('zii.widgets.jui.CJuiDialog',array(
  )); ?>
  <div class="divForForm">
 </div>
-<?php $this->endWidget('zii.widgets.jui.CJuiDialog');?>
+<?php $this->endWidget('zii.widgets.jui.CJuiDialog');*/?>

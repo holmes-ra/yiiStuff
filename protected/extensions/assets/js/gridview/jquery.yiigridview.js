@@ -139,7 +139,9 @@
 				 */
 				if (settings.selectableRows > 0) {
 					selectCheckedRows(this.id);
-					$(document).on('click.yiiGridView', '#' + id + ' .' + settings.tableClass + ' > tbody > tr', function (e) {
+					// Modified this line. see gitHub issue #1 for explaination
+					$(document).on('click.yiiGridView', '#' + id + ' table > tbody > tr', function (e) {	
+										
 						var $currentGrid, $row, isRowSelected, $checks,
 							$target = $(e.target);
 

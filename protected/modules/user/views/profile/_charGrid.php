@@ -1,4 +1,26 @@
-    <?php
+<?php
+$this->beginWidget('zii.widgets.jui.CJuiDialog', array( // the dialog
+    'id'=>'accessDialog',
+
+    'options'=>array(
+        // .off() is to remove the event handler 
+        'close' => "js:function(ev, ui) {
+            $(document).off('click.yiiGridView', '#access-grid table > tbody > tr'); }",
+        'title'=>'Access',
+        'autoOpen'=>false,
+        'modal'=>true,
+        'width'=>350,
+        'height'=>400,
+        'show'=> array('effect'=>"fade"),
+        'hide'=>array('effect'=>"fade"),
+
+    ),
+));?>
+<div class="divForForm"></div>
+ 
+<?php $this->endWidget();?>
+
+<?php
 
         // todo: for the delete button, make sure ajax does it, but if not direct to a seperate confirmation page.
         //       This will prevent people from linking the deleteChar url and deleting characters on a whim
@@ -10,17 +32,69 @@ $ajaxOptions = array(
         $('#charFlash').html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut('slow');
         $.fn.yiiGridView.update('char-grid'); }"  
 );
+$ajax = CHtml::ajax(array(
+            'url'=>"js:$(this).attr('href')",
+            'data'=> "js:$(this).serialize()",
+            'type'=>'post',
+            'dataType'=>'json',
+            'success'=>"function(data) {
+                if (data.status == 'failure')
+                {
+                    $('#accessDialog div.divForForm').html(data.div);
+                          // Here is the trick: on submit-> once again this function!
+                    $('#accessDialog div.divForForm form').submit(this);
+                }
+                else
+                {
+                    $('#accessDialog div.divForForm').html(data.div);
+                    setTimeout(\"$('#accessDialog').dialog('close') \",3000);
+                }
+ 
+            } ",
+            ));
 
 $columns = array(
-        array('name'=>'Status', 'value' => "print('OK')"),
         array('name'=>'characterName', 'header'=>'Character'),
         array('name'=>'corporationName', 'header'=>'Corporation'),
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
-            'htmlOptions'=>array('style'=>'width: 0px'),
-            'template' => '<span class="right">{activate}{default}{enable}{disable}{delete}</span>',
+            'htmlOptions'=>array('style'=>'width: 60px;'),
+            'template' => '<span class="right">{update}{activate}{default}{enable}{disable}{delete}</span>',
             'buttons'=>array
             (
+                'update' => array
+                (
+                    'label'   => 'Update Access',
+                    'url'     => 'Yii::app()->createUrl("user/profile/access", array("id"=>$data->characterID))',
+                    'visible' => '$data->registered !== null',
+                    'click'   => "function(e) {
+                        e.preventDefault();
+                        console.log('click');".$ajax."
+                        $('#accessDialog').dialog('open');
+                    }",
+                   // 'options' => 
+                    /*array(
+                        'ajax' => array(
+                            'url'=>"js:$(this).attr('href')",
+                            'data'=> "js:$(this).serialize()",
+                            'type'=>'post',
+                            'dataType'=>'json',
+                            'success'=>"function(data) {
+                                if (data.status == 'failure')
+                                {
+                                    $('#accessDialog div.divForForm').html(data.div);
+                                          // Here is the trick: on submit-> once again this function!
+                                    $('#accessDialog div.divForForm form').submit(editAccess);
+                                }
+                                else
+                                {
+                                    $('#accessDialog div.divForForm').html(data.div);
+                                    setTimeout(\"$('#accessDialog').dialog('close') \",3000);
+                                }
+                 
+                            } ",
+                            ))*/
+                ),
                 'delete' => array
                 (
                     'label' => 'Delete',
@@ -74,19 +148,13 @@ $columns = array(
         ),
     );
 
-$this->widget('bootstrap.widgets.TbExtendedGridView', array(
+$this->widget('bootstrap.widgets.TbGridView', array(
     'id'=>'char-grid',
     'type'=>'striped bordered condensed',
     'dataProvider'=>$charDataProvider,
     'template'=>"{items}",
-    'columns'=>array_merge(array(
-        array(
-            'class'=>'bootstrap.widgets.TbRelationalColumn',
-            'name' => 'Access',
-            'url'  => Yii::app()->createUrl("user/profile/access", array("type"=>"char")),
-            'value'=> '"Show Access"',
-        )
-    ),$columns),
-));
+    'selectableRows' => 0,
+    'columns'=>$columns)
+);
 
 ?>

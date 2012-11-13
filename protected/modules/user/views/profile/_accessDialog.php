@@ -41,18 +41,18 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'disabled'=>'!('.$availableMask.' & $data->mask)',
             'checkBoxHtmlOptions'=>array('name'=>'mask[]'),
         ),
-        array('header'=>'API Call', 'value' => '$data->api; $this->widget("bootstrap.widgets.TbExtendedTooltip", array("key" => "test.tooltip2", "editable"=>false));'),
+        array('header'=>'API Call', 'value' => '$data->api'),
     ),
 ));
 
 /*
 $this->widget('bootstrap.widgets.TbButtonGroup', array(
     'buttons'=>array(
-        array('buttonType'=>'ajaxSubmit', 'label' => 'Edit','type' => 'primary', 'ajaxOptions' => $ajaxOptions),
+        array('buttonType'=>'submit', 'label' => 'Edit','type' => 'primary', 'ajaxOptions' => $ajaxOptions),
     ),
 ));
 /**/
-echo CHtml::submitButton("go", '');
+echo CHtml::submitButton("Edit Access Mask");
 
 $this->endWidget();
 

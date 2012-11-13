@@ -31,28 +31,6 @@ $this->breadcrumbs=array(
     which data is pulled for specific characters. please ntoe that once enabled, it may take up to 15 minutes 
     to pull data. if you disable a character, the data still remains in the database, however it is no longer 
     updated nor can it be accessed. To delete character data, you must delete character from UtilRegisteredCharacters.</p>
-    <?php echo CHtml::link('Edit Access', "",  // the link for open the dialog
-    array(
-        'style'=>'cursor: pointer; text-decoration: underline;',
-        'onclick'=>"{editAccess(); $('#accessDialog').dialog('open');}"));?>
- 
-<?php
-$this->beginWidget('zii.widgets.jui.CJuiDialog', array( // the dialog
-    'id'=>'accessDialog',
-    'options'=>array(
-        'title'=>'Access',
-        'autoOpen'=>false,
-        'modal'=>true,
-        'width'=>350,
-        'height'=>500,
-        'show'=> array('effect'=>"fade"),
-        'hide'=>array('effect'=>"fade"),
-
-    ),
-));?>
-<div class="divForForm"></div>
- 
-<?php $this->endWidget();?>
 
 <?php 
 	// this widget will show alerts when character actions are called without AJAX
@@ -64,34 +42,4 @@ $this->beginWidget('zii.widgets.jui.CJuiDialog', array( // the dialog
 ));
 ?>
 
-<?php $this->renderPartial('_charGrid', array('charDataProvider'=>$charDataProvider, 'user'=>$model)); ?> 
- 
-<script type="text/javascript">
-// here is the magic
-function editAccess()
-{
-    <?php echo CHtml::ajax(array(
-            'url'=>Yii::app()->createUrl("user/profile/access", array("id"=>1882610540)),
-            'data'=> "js:$(this).serialize()",
-            'type'=>'post',
-            'dataType'=>'json',
-            'success'=>"function(data) {
-                if (data.status == 'failure')
-                {
-                    $('#accessDialog div.divForForm').html(data.div);
-                          // Here is the trick: on submit-> once again this function!
-                    $('#accessDialog div.divForForm form').submit(editAccess);
-                }
-                else
-                {
-                    $('#accessDialog div.divForForm').html(data.div);
-                    setTimeout(\"$('#accessDialog').dialog('close') \",3000);
-                }
- 
-            } ",
-            ))?>;
-    return false; 
- 
-}
- 
-</script>
+<?php $this->renderPartial('_charGrid', array('charDataProvider'=>$charDataProvider, 'user'=>$model)); ?>
