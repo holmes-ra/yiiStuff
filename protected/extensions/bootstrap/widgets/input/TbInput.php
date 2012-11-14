@@ -27,11 +27,6 @@ abstract class TbInput extends CInputWidget
 	const TYPE_TEXT = 'textfield';
 	const TYPE_CAPTCHA = 'captcha';
 	const TYPE_UNEDITABLE = 'uneditable';
-	const TYPE_DATEPICKER = 'datepicker';
-	const TYPE_REDACTOR = 'redactor';
-	const TYPE_HTML5EDITOR = 'wysihtml5';
-	const TYPE_DATERANGEPICKER = 'daterangepicker';
-	const TYPE_TOGGLEBUTTON = 'togglebutton';
 
 	/**
 	 * @var TbActiveForm the associated form widget.
@@ -95,13 +90,13 @@ abstract class TbInput extends CInputWidget
 	public function init()
 	{
 		if (!isset($this->form))
-			throw new CException(__CLASS__ . ': Failed to initialize widget! Form is not set.');
+			throw new CException(__CLASS__.': Failed to initialize widget! Form is not set.');
 
 		if (!isset($this->model))
-			throw new CException(__CLASS__ . ': Failed to initialize widget! Model is not set.');
+			throw new CException(__CLASS__.': Failed to initialize widget! Model is not set.');
 
 		if (!isset($this->type))
-			throw new CException(__CLASS__ . ': Failed to initialize widget! Input type is not set.');
+			throw new CException(__CLASS__.': Failed to initialize widget! Input type is not set.');
 
 		if ($this->type === self::TYPE_UNEDITABLE)
 		{
@@ -235,28 +230,8 @@ abstract class TbInput extends CInputWidget
 				$this->uneditableField();
 				break;
 
-			case self::TYPE_DATEPICKER:
-				$this->datepickerField();
-				break;
-
-			case self::TYPE_REDACTOR:
-				$this->redactorJs();
-				break;
-
-			case self::TYPE_HTML5EDITOR:
-				$this->html5Editor();
-				break;
-
-			case self::TYPE_DATERANGEPICKER:
-				$this->dateRangeField();
-				break;
-
-			case self::TYPE_TOGGLEBUTTON:
-				$this->toggleButton();
-				break;
-
 			default:
-				throw new CException(__CLASS__ . ': Failed to run widget! Type is invalid.');
+				throw new CException(__CLASS__.': Failed to run widget! Type is invalid.');
 		}
 	}
 
@@ -290,12 +265,13 @@ abstract class TbInput extends CInputWidget
 				$htmlOptions['class'] = 'add-on';
 
 			ob_start();
-			echo '<div class="' . $this->getAddonCssClass() . '">';
+			echo '<div class="'.$this->getAddonCssClass().'">';
 			if (isset($this->prependText))
 				echo CHtml::tag('span', $htmlOptions, $this->prependText);
 
 			return ob_get_clean();
-		} else
+		}
+		else
 			return '';
 	}
 
@@ -320,20 +296,21 @@ abstract class TbInput extends CInputWidget
 
 			echo '</div>';
 			return ob_get_clean();
-		} else
+		}
+		else
 			return '';
 	}
-
+	
 	/**
 	 * Returns the id that should be used for the specified attribute
 	 * @param string $attribute the attribute
-	 * @return string the id
+	 * @return string the id 
 	 */
-	protected function getAttributeId($attribute)
+	protected function getAttributeId($attribute) 
 	{
 		return isset($this->htmlOptions['id'])
-			? $this->htmlOptions['id']
-			: CHtml::getIdByName(CHtml::resolveName($this->model, $attribute));
+				? $this->htmlOptions['id']
+				: CHtml::getIdByName(CHtml::resolveName($this->model, $attribute));
 	}
 
 	/**
@@ -361,7 +338,8 @@ abstract class TbInput extends CInputWidget
 				$htmlOptions['class'] = 'help-block';
 
 			return CHtml::tag('p', $htmlOptions, $this->hintText);
-		} else
+		}
+		else
 			return '';
 	}
 
@@ -405,13 +383,6 @@ abstract class TbInput extends CInputWidget
 	 * @abstract
 	 */
 	abstract protected function checkBox();
-
-	/**
-	 * Renders a toggle button.
-	 * @return string the rendered content
-	 * @abstract
-	 */
-	abstract protected function toggleButton();
 
 	/**
 	 * Renders a list of checkboxes.
@@ -496,32 +467,4 @@ abstract class TbInput extends CInputWidget
 	 * @abstract
 	 */
 	abstract protected function uneditableField();
-
-	/**
-	 * Renders a datepicker field.
-	 * @return string the rendered content
-	 * @abstract
-	 */
-	abstract protected function datepickerField();
-
-	/**
-	 * Renders a redactorJS wysiwyg field.
-	 * @abstract
-	 * @return mixed
-	 */
-	abstract protected function redactorJs();
-
-	/**
-	 * Renders a bootstrap wysihtml5 editor.
-	 * @abstract
-	 * @return mixed
-	 */
-	abstract protected function html5Editor();
-
-	/**
-	 * Renders a daterange picker field
-	 * @abstract
-	 * @return mixed
-	 */
-	abstract protected function dateRangeField();
 }
