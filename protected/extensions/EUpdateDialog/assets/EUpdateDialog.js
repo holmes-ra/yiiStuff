@@ -226,7 +226,7 @@ var updateDialog = {
     }
     
     // Open jQuery UI dialog
-    this.dialog.dialog({ title: this.title, width: width }).dialog( 'open' );
+    this.dialog.dialog({ title: this.title, width: width, buttons: this.buttons}).dialog( 'open' );
     
     // Add loading indicator for feedback
     this.addLoader();
@@ -300,6 +300,35 @@ var updateDialog = {
     
     // Close UpdateDialog
     updateDialog.close();
+  },
+  
+  /**
+   * Set dialog buttons
+   * @param string or undefined
+   */
+  buttonSet : function( data ){
+    switch( data )
+      {
+        // Callback on render
+        case 'delete':
+          updateDialog.buttons = { 
+             Delete: function() { updateDialog.submit('confirmDelete'); }, 
+             Cancel: function() { $( this ).dialog( "close" ); } 
+          }
+          break;
+        
+        // Callback on success
+        case undefined:
+        case 'self':
+          updateDialog.buttons = {};
+          break;
+
+        // Callback on image delete
+        default:
+          updateDialog.buttons = { 
+            Submit: function() { updateDialog.submit(); }}
+          break;
+      }
   }
 };
 
@@ -313,12 +342,15 @@ function updateDialogOpen( e ){
   
   // Set title for dialog using data attribute
   updateDialog.title = $( this ).data( 'update-dialog-title' );
+
+  // Set buttons using data attribute
+  updateDialog.buttonSet($( this ).data( 'update-dialog-type' ));
   
   // Initialize update dialog if it's the first run
-  if( typeof updateDialog.dialog === 'undefined' )
-  {
-    updateDialog.init();
-  }
+  updateDialog.init();
+  
+
+  
   
   // Open update dialog
   updateDialog.open( $( this ).attr( 'href' ) );

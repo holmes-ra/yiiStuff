@@ -63,12 +63,11 @@ class ProfileController extends Controller
                         	));
                     	exit;
                 	}
-				}
+				} // @todo: error if not updated
 			}
 
-			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char()->bitmask($availableMask));
-
 			if (Yii::app()->request->isAjaxRequest) {
+				$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char()->bitmask($availableMask));
             	echo CJSON::encode(array(
                 	'content'=>$this->renderPartial('_accessDialog', array(
                 		'char'=>$char,
@@ -76,12 +75,22 @@ class ProfileController extends Controller
 						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true, true)));
 	            exit;   
         	}
-        	
+        	$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
 			$this->render('access', array(
 				'char'          => $char,
 				'dataProvider'  => $dataProvider,
 				'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id),
 			));
+		} else {
+			// @todo log error
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'status' => 'error',
+                	'content'=> 'An error happened. You shouldn\'t have seen this. You. Saw. <strong>Nothing</strong>.'));
+            	exit;
+            }
+
+			$this->redirect(Yii::app()->controller->module->profileUrl); 
 		}
 	}
 
@@ -106,19 +115,17 @@ class ProfileController extends Controller
 	}
 
 	public function actionActivateChar($id) {
-		// Make sure activating char is indeed a character owned by user
-		$user      = User::model()->findByPk(Yii::app()->user->id);
-		$character = $user->characters(array('condition' => 'characters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$char = $this->loadChar($id, false);
 
 		$new = YUtilRegisteredCharacter::model()->findByPk($id);
 		if (!$new) {
 			$new = new YUtilRegisteredCharacter;
 			$new->characterID   = $id;
 			$new->isActive      = 1;
-			$new->characterName = $character[0]->characterName;
+			$new->characterName = $char->characterName;
 			$new->activeAPIMask = $new->getAvailableBitmask(Yii::app()->user->id, $id);
 			if ($new->save()){
-				Yii::app()->user->setFlash('success', $character[0]->characterName." was activated! Data will be polled from API servers momentarily."); }
+				Yii::app()->user->setFlash('success', $char->characterName." was activated! Data will be polled from API servers momentarily."); }
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
@@ -136,13 +143,12 @@ class ProfileController extends Controller
 	}
 
 	public function actionEnableChar($id) {
-		$user      = User::model()->findByPk(Yii::app()->user->id);
-		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$char = $this->loadChar($id);
 
-		if(count($character) === 1) {
-			$character[0]->isActive = 1;
-			if ($character[0]->save()) {
-				Yii::app()->user->setFlash('success', $character[0]->characterName." was enabled! Data will be polled from API servers momentarily."); }
+		if(count($char) === 1) {
+			$char->isActive = 1;
+			if ($char->save()) {
+				Yii::app()->user->setFlash('success', $char->characterName." was enabled! Data will be polled from API servers momentarily."); }
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
@@ -160,13 +166,12 @@ class ProfileController extends Controller
 	}
 
 	public function actionDisableChar($id) {
-		$user      = User::model()->findByPk(Yii::app()->user->id);
-		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$char = $this->loadChar($id);
 
-		if(count($character) === 1) {
-			$character[0]->isActive = 0;
-			if ($character[0]->save()) {
-				Yii::app()->user->setFlash('info', $character[0]->characterName." was successfully disabled. API data will no longer be polled from this character."); }
+		if($char) {
+			$char->isActive = 0;
+			if ($char->save()) {
+				Yii::app()->user->setFlash('info', $char->characterName." was successfully disabled. API data will no longer be polled from this character."); }
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
@@ -185,35 +190,54 @@ class ProfileController extends Controller
 
 	public function actionDeleteChar($id) {
 		// @todo: if default character, change
-		$user      = User::model()->findByPk(Yii::app()->user->id);
-		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
-		if(count($character) === 1) {
-			if ($character[0]->delete()) {
-				Yii::app()->user->setFlash('info', $character[0]->characterName." was successfully deleted, along with all data associated with character."); }
-			else {
-				// @todo: actually log error
-				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+		$char = $this->loadChar($id);
+
+		if ($char) {
+			if (isset($_POST['confirmDelete'])) {
+				if ($char->delete()) {
+					Yii::app()->user->setFlash('info', $char->characterName." was successfully deleted, along with all data associated with character.");
+
+					if (Yii::app()->request->isAjaxRequest) {
+                    	echo CJSON::encode(array(
+                        	'status'=>'success', 
+	                        'content'=>"Character was successfully deleted."
+                        	));
+                    	exit;
+                	}
+                	$this->redirect(Yii::app()->controller->module->profileUrl);
+				} // @todo: if error, do something
 			}
+			else if (isset($_POST['denyDelete'])) {
+				$this->redirect(Yii::app()->controller->module->profileUrl);
+			}
+
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'content'=>$this->renderPartial('_deleteChar', array(
+                		'char'=>$char), true, true)));
+	            exit;   
+        	}
+			$this->render('deleteChar', array('char' => $char));
 		} else {
-			// @fixme: maybe throw invalid input exception or soemthing?
-			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
+			// @todo log error
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'status' => 'error',
+                	'content'=> 'An error happened. You shouldn\'t have seen this. You. Saw. <strong>Nothing</strong>.'));
+            	exit;
+            }
+
+			$this->redirect(Yii::app()->controller->module->profileUrl); 
 		}
-		if (Yii::app()->request->isAjaxRequest) {
-			$this->showFlash(); // Just return the html and exit
-            exit;               
-       	}
-		// regardless of what happens, should also redirect back to profile page.
-        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionDefaultChar($id) {
-		$user      = User::model()->findByPk(Yii::app()->user->id);
-		$character = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$char = $this->loadChar($id);
 
-		if(count($character) === 1){
-			$user->defaultChar = $character[0]->characterID;
-			if ($user->update()) {
-				Yii::app()->user->setFlash('info', "<strong>".$character[0]->characterName."</strong> has been set to the default character."); }
+		if($char){
+			$this->_model->defaultChar = $char->characterID;
+			if ($this->_model->update()) {
+				Yii::app()->user->setFlash('info', "<strong>".$char->characterName."</strong> has been set to the default character."); }
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
@@ -397,9 +421,10 @@ public function setFlash( $key, $value, $defaultValue = null )
 	}
 	
 	// loads registered character
-	public function loadChar($id) {
+	public function loadChar($id, $registered = true) {
 		$model = $this->loadUser();
-		$char  = $model->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$tbl = ($registered ? 'regCharacters' : 'characters');
+		$char  = $model->{$tbl}(array('condition' => $tbl.'.characterID = :id', 'params'=>array(':id'=>$id)));
 		if (count($char) === 1) {
 			return $char[0];
 		}

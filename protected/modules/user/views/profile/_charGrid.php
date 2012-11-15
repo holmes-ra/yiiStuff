@@ -7,9 +7,9 @@ $this->widget('ext.EUpdateDialog.EUpdateDialog', array(
         'modal' => true,
         'width' =>350,
         'height' => 400,
-        'buttons' => array("Submit"=>'js:function(){
+        /*'buttons' => array("Submit"=>'js:function(){
             updateDialog.submit();
-        }'),
+        }'),*/
         'close' => "js:function(e){
             $(document).off('click.yiiGridView', '#access-grid table > tbody > tr');
         }",  
@@ -41,6 +41,7 @@ $columns = array(
                     'click' => 'updateDialogOpen',
                     'options' => array(
                         'data-update-dialog-title' => Yii::t( 'app', 'Update Access' ),
+                        'data-update-dialog-type' => 'update',
                     ),
                 ),
                 'delete' => array
@@ -48,8 +49,10 @@ $columns = array(
                     'label' => 'Delete',
                     'url'   => 'Yii::app()->createUrl("user/profile/deleteChar", array("id"=>$data->characterID))',
                     'visible' => '$data->registered !== null',
+                    'click' => 'updateDialogOpen',
                     'options'=>array(  
-                        'ajax'=>$ajaxOptions,
+                        'data-update-dialog-title' => Yii::t( 'app', 'Delete Character' ),
+                        'data-update-dialog-type' => 'delete',
                     ),
                 ),
                 'disable' => array
