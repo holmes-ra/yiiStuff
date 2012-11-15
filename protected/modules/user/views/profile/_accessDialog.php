@@ -1,53 +1,19 @@
-
-
-<div id="dialog-fixed">
 <?php
 
+/**
+ * This view is used when rendering via AJAX into the dialog used in user's profile.
+ * It includes a short-form API call list, as opossed to complete list with descriptions, etc
+ * 
+ * @todo include descrition via non-obtrusive popout/over/tooltip 
+ */
 
-/*
-$this->widget('bootstrap.widgets.TbButton', array(
-    'buttonType' => 'submit',
-    'label'=>'Primary',
-    'type'=>'primary', // null, 'primary', 'info', 'success', 'warning', 'danger' or 'inverse'
-    'size'=>'small', // null, 'large', 'small' or 'mini'
-      //  'block' => true,
-    'htmlOptions'=>array()
-)); 
-/**/
-//echo CHtml::submitButton("Edit Access Mask", array());
+$this->renderPartial('_accessDescription', array('char'=>$char));
 
-
-
-
- 
-?></div>
-<?php
 $form=$this->beginWidget('CActiveForm', array(
         'id'=>'access-form',
         'enableAjaxValidation'=>false,
         'htmlOptions'=>array('enctype' => 'multipart/form-data')
 ));
-//print_r($model);
-//exit;
-
-//$dataProvider->setPagination(false);
-
-/*
-$ajaxOptions = array(
-   // 'url'=>"js:$(this).attr('href')", 
-    'success'=> "js:function(data){
-        $('#accessFlash').html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut('slow');
-         }"  
-);
-
-
-$this->widget('bootstrap.widgets.TbAlert', array(
-    'block'=>true, // display a larger alert block?
-    'fade'=>true, // use transitions?
-    'closeText'=>'&times;', // close link text - if set to false, no close link is displayed
-    'htmlOptions'=>array('id'=>'accessFlash', 'style'=>'margin-bottom:-20px;'),
-));
-*/
 
 $dataProvider->setPagination(false);
 $this->widget('bootstrap.widgets.TbGridView', array(

@@ -38,8 +38,19 @@ class ProfileController extends Controller
 		$this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
+
+	/**
+	 * Button functions
+	 * @todo Make sure user can modify character! If not, don't allow it
+	 * Also, may them POSTs with ajax or whatev
+	 * @todo when registering / adding api, check characters in system. If any conflicts, notify 
+	 * the user and ask that he delete the key's associated with the characters from his API page on EVEO
+	 *
+	 * @todo Perhaps put all character edits in a new CharacterControler and API edits in a KeysController. Must look into this.
+	 * Default view could be user's associated characters and keys in a gridview.
+	 */
+
 	// Only allow access mask modification to characters.
-	// @fixme: OH GOD PLEASE FIX ME.
 	public function actionAccess($id) {
 		$char = $this->loadChar($id);
 
@@ -93,17 +104,6 @@ class ProfileController extends Controller
 			$this->redirect(Yii::app()->controller->module->profileUrl); 
 		}
 	}
-
-	/*
-	 * Button functions
-	 * @todo Make sure user can modify character! If not, don't allow it
-	 * Also, may them POSTs with ajax or whatev
-	 * @todo when registering / adding api, check characters in system. If any conflicts, notify 
-	 * the user and ask that he delete the key's associated with the characters from his API page on EVEO
-	 *
-	 * @todo Perhaps put all character edits in a new CharacterControler and API edits in a KeysController. Must look into this.
-	 * Default view could be user's associated characters and keys in a gridview.
-	 */
 
 	// Light function to keep code clean.
 	protected function showFlash() {
