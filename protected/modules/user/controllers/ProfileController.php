@@ -41,45 +41,47 @@ class ProfileController extends Controller
 	// Only allow access mask modification to characters.
 	// @fixme: OH GOD PLEASE FIX ME.
 	public function actionAccess($id) {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$char = $user->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		$char = $this->loadChar($id);
 
-		if ($char[0]) {
-			/*echo "<pre>";
-			print_r($char); exit;	*/
+		if ($char) {
+
 			$availableMask = YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id);
 			
-			if (isset($_POST['mask'])){
+			if (isset($_POST['mask'])) {
+
 				$mask = array_reduce($_POST['mask'], function($a, $b) { return $a | $b; });
 				$mask = $mask & $availableMask; // only apply what character can use
-				$char[0]->activeAPIMask = $mask;
-				if ($char[0]->update()){
-					if (Yii::app()->request->isAjaxRequest) {
+				$char->activeAPIMask = $mask;
 
+				if ($char->update()) {
+					Yii::app()->user->setFlash('success', "New mask <b>".$mask."</b> for ".$char->characterName);
+
+					if (Yii::app()->request->isAjaxRequest) {
                     	echo CJSON::encode(array(
                         	'status'=>'success', 
-	                        'div'=>"API Access Mask successfully updated!"
+	                        'content'=>"API Access Mask successfully updated!"
                         	));
-                    	exit;               
+                    	exit;
                 	}
-					Yii::app()->user->setFlash('success', "New mask <b>".$mask."</b> for ".$char[0]->characterName);
 				}
 			}
-			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char());
+
+			$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char()->bitmask($availableMask));
+
 			if (Yii::app()->request->isAjaxRequest) {
             	echo CJSON::encode(array(
-                	'status'=>'failure', 
-                	'div'=>$this->renderPartial('_accessDialog', array(
+                	'content'=>$this->renderPartial('_accessDialog', array(
                 		'char'=>$char,
                 		'dataProvider'  => $dataProvider,
 						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true, true)));
-	            		exit;               
+	            exit;   
         	}
+        	
 			$this->render('access', array(
-					'char'          => $char,
-					'dataProvider'  => $dataProvider,
-					'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id),
-				));
+				'char'          => $char,
+				'dataProvider'  => $dataProvider,
+				'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id),
+			));
 		}
 	}
 
@@ -372,6 +374,10 @@ class ProfileController extends Controller
 			$this->render('changepassword', array('model'=>$model));
 		}
 	}
+public function setFlash( $key, $value, $defaultValue = null )
+{
+  Yii::app()->user->setFlash( $key, $value, $defaultValue );
+}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
@@ -388,5 +394,15 @@ class ProfileController extends Controller
 				$this->redirect(Yii::app()->controller->module->loginUrl);
 		}
 		return $this->_model;
+	}
+	
+	// loads registered character
+	public function loadChar($id) {
+		$model = $this->loadUser();
+		$char  = $model->regCharacters(array('condition' => 'regCharacters.characterID = :id', 'params'=>array(':id'=>$id)));
+		if (count($char) === 1) {
+			return $char[0];
+		}
+		return false;
 	}
 }

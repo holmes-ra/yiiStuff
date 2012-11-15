@@ -75,6 +75,15 @@ class YUtilAccessMask extends CActiveRecord
         );
     }
 
+	// returns only rows that are comparable to $bitmask
+    public function bitmask($bitmask)
+    {
+        $this->getDbCriteria()->mergeWith(array(
+            'condition' => 'mask & '.$bitmask,
+        ));
+        return $this;
+    }
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
