@@ -1,10 +1,4 @@
 <?php
-/**
- * C:\Users\Ryan\AppData\Roaming\Sublime Text 2\Packages/PhpTidy/phptidy-sublime-buffer.php
- *
- * @package default
- */
-
 
 class ProfileController extends Controller
 {
@@ -299,36 +293,31 @@ class ProfileController extends Controller
 	public function actionAddApi() {
 		$model = new YUtilRegisteredKey;
 
-
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
- 
-        if(isset($_POST['YUtilRegisteredKey']))
-        {
+        if(isset($_POST['YUtilRegisteredKey'])) {
             $model->attributes=$_POST['YUtilRegisteredKey'];
             $model->userID = Yii::app()->user->id;
+
             if($model->validate() && $model->withRelated->save(false, array('accountCharacters')))
             {
                 if (Yii::app()->request->isAjaxRequest)
                 {
                     echo CJSON::encode(array(
                         'status'=>'success', 
-                        'div'=>"API successfully added!"
+                        'content'=>"API successfully added!"
                         ));
                     exit;               
                 }
-                else
-                    $this->redirect('.');
-                    //$this->redirect(array('view','id'=>$model->id));
+                else {
+       				 $this->redirect(Yii::app()->controller->module->profileUrl); }
             }
         }
 
         if (Yii::app()->request->isAjaxRequest)
         {
             echo CJSON::encode(array(
-                'status'=>'failure', 
-                'div'=>$this->renderPartial('_addApi', array('model'=>$model), true)));
-            exit;               
+           		'status' => 'render', 
+                'content'=>$this->renderPartial('_addApi', array('model'=>$model), true,true)));
+            exit;    
         }
         else {
             $this->render('addApi',array('model'=>$model,)); }
@@ -427,6 +416,15 @@ public function setFlash( $key, $value, $defaultValue = null )
 		$char  = $model->{$tbl}(array('condition' => $tbl.'.characterID = :id', 'params'=>array(':id'=>$id)));
 		if (count($char) === 1) {
 			return $char[0];
+		}
+		return false;
+	}
+	
+	public function loadKey($id) {
+		$model = $this->loadUser();
+		$key   = $model->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
+		if (count($key) === 1) {
+			return $key[0];
 		}
 		return false;
 	}

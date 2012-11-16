@@ -1,11 +1,9 @@
 
-<div class="form" id="apiDialogForm">
+<div class="form">
  
-<?php $form = $this->beginWidget('CActiveForm', array(
+<?php $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     'id'=>'api-form',
-  //  'enableAjaxValidation'=>true,
 )); 
-//I have enableAjaxValidation set to true so i can validate on the fly the
 ?>
  
     <p class="note">Fields with <span class="required">*</span> are required.</p>
@@ -23,11 +21,17 @@
         <?php echo $form->textField($model,'vCode'); ?>
         <?php echo $form->error($model,'vCode'); ?>
     </div>
- 
-    <div class="row buttons">
-        <?php echo CHtml::submitButton(Yii::t('addapi','Add API')); ?>
+    <?php if (!Yii::app()->request->isAjaxRequest): ?>
+    <div class="btn-toolbar">
+    <?php
+        $this->widget( 'bootstrap.widgets.TbButton', array(
+            'buttonType' => 'submit',
+            'type'=>'primary',
+            'label' => 'Add API',
+        ));
+    ?>
     </div>
- 
+    <?php endif; ?>
 <?php $this->endWidget(); ?>
  
 </div>

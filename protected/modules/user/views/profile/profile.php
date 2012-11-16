@@ -4,13 +4,19 @@ $this->breadcrumbs=array(
 );?><h2><?php echo UserModule::t('User Settings'); ?></h2>
 <?php echo $this->renderPartial('menu'); ?>
 
-<?php if(Yii::app()->user->hasFlash('profileMessage')): ?>
-<div class="success">
-<?php echo Yii::app()->user->getFlash('profileMessage'); ?>
-</div>
-<?php endif; ?>
-
-
+<?php
+$this->widget('ext.EUpdateDialog.EUpdateDialog', array(
+    'dialogOptions' => array(
+        'autoOpen' => false,
+        'modal' => true,
+        'width' => 350,
+        'height' => 400,
+        'close' => "js:function(e){
+            $(document).off('click.yiiGridView', '#access-grid table > tbody > tr');
+        }",  
+    ))
+);
+?>
 <h3>API Keys</h3>
 <p>The table below lists the API keys associated with your account. Once added, they are automatically 
     enabled for use; however, to pull character data you must enable the characters manually.</p>
