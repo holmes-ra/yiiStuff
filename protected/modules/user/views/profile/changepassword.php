@@ -16,7 +16,13 @@ $this->breadcrumbs=array(
 
 	<p class="note"><?php echo UserModule::t('Fields with <span class="required">*</span> are required.'); ?></p>
 	<?php echo CHtml::errorSummary($model); ?>
-	
+	<!--
+	<div class="row">
+	<?php echo $form->labelEx($model,'oldpass'); ?>
+	<?php echo $form->passwordField($model,'oldpass'); ?>
+	<?php echo $form->error($model,'oldpass'); ?>
+	</div>
+	-->
 	<div class="row">
 	<?php echo $form->labelEx($model,'password'); ?>
 	<?php echo $form->passwordField($model,'password'); ?>

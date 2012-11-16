@@ -249,12 +249,11 @@ class ProfileController extends Controller
 	}
 
 	public function actionEnableKey($id) {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$key  = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
+		$key = $this->loadKey($id);
 
-		if(count($key) === 1){
-			$key[0]->isActive = 1;
-			if ($key[0]->save()) {
+		if($key){
+			$key->isActive = 1;
+			if ($key->save()) {
 				// if this is ajax, we simply return the data and that's it
 				if (Yii::app()->request->isAjaxRequest) {
             		echo "<strong>Save Succesful</strong>";
@@ -267,12 +266,11 @@ class ProfileController extends Controller
 	}
 
 	public function actionDisableKey($id) {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$key  = $user->keys(array('condition' => 'keys.keyID = :id', 'params'=>array(':id'=>$id)));
+		$key = $this->loadKey($id);
 
-		if(count($key) === 1){
-			$key[0]->isActive = 0;
-			if ($key[0]->save()) {
+		if($key){
+			$key->isActive = 0;
+			if ($key->save()) {
 				// if this is ajax, we simply return the data and that's it
 				if (Yii::app()->request->isAjaxRequest) {
             		echo "<strong>Save Succesful</strong>";
@@ -285,7 +283,7 @@ class ProfileController extends Controller
 	}
 
 	public function actionDeleteKey($id) {
-		// @todo: funtion. When deleting key, go through characters accociated with key that are also in utilRegChars. 
+		// @todo: When deleting key, go through characters accociated with key that are also in utilRegChars. 
 		// If any are found, see if character is associated with another key -by the same user (?)- and if so, update 
 		// characters active API to include LIKE (?) calls. if no characters are found, delete from utilRegChars
 
@@ -402,22 +400,26 @@ class ProfileController extends Controller
 	/**
 	 * Change password
 	 */
-	public function actionChangepassword() {
+	public function actionChangePassword() {
 		$model = new UserChangePassword;
 		if (Yii::app()->user->id) {
 
 			// ajax validator
 			if (isset($_POST['ajax']) && $_POST['ajax']==='changepassword-form') {
-				echo UActiveForm::validate($model);
+				echo CActiveForm::validate($model);
 				Yii::app()->end();
 			}
 
 			if (isset($_POST['UserChangePassword'])) {
 				$model->attributes=$_POST['UserChangePassword'];
+
 				if ($model->validate()) {
 					$new_password = User::model()->notsafe()->findbyPk(Yii::app()->user->id);
-					$new_password->password = UserModule::encrypting($model->password);
-					$new_password->activkey=UserModule::encrypting(microtime().$model->password);
+					if (UserModule::encrypting($model->oldpass) != $new_password->password) {
+						
+					}
+					$new_password->password = $pass;
+					$new_password->activkey = UserModule::encrypting(microtime().$model->password);
 					$new_password->save();
 					Yii::app()->user->setFlash('profileMessage', UserModule::t("New password is saved."));
 					$this->redirect(array("profile"));
@@ -426,10 +428,6 @@ class ProfileController extends Controller
 			$this->render('changepassword', array('model'=>$model));
 		}
 	}
-public function setFlash( $key, $value, $defaultValue = null )
-{
-  Yii::app()->user->setFlash( $key, $value, $defaultValue );
-}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
