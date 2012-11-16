@@ -19,6 +19,11 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 				(
 					'label' => 'Delete',
 					'url'   => 'Yii::app()->createUrl("user/profile/deleteKey", array("id"=>$data->keyID))',
+					'click' => 'updateDialogOpen',
+					'options'=>array(  
+						'data-update-dialog-title' => Yii::t( 'app', 'Delete Key' ),
+						'data-update-dialog-type' => 'delete',
+					),
 				),
 				'disable' => array
 				(

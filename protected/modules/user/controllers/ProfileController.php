@@ -288,6 +288,45 @@ class ProfileController extends Controller
 		// @todo: funtion. When deleting key, go through characters accociated with key that are also in utilRegChars. 
 		// If any are found, see if character is associated with another key -by the same user (?)- and if so, update 
 		// characters active API to include LIKE (?) calls. if no characters are found, delete from utilRegChars
+
+		$key = $this->loadKey($id);
+
+		if ($key) {
+			if (isset($_POST['confirmDelete'])) {
+				if ($key->delete()) {
+					Yii::app()->user->setFlash('info', $key->keyID." was successfully deleted.");
+
+					if (Yii::app()->request->isAjaxRequest) {
+                    	echo CJSON::encode(array(
+                        	'status'=>'success', 
+	                        'content'=>"Key was successfully deleted."
+                        	));
+                    	exit;
+                	}
+                	$this->redirect(Yii::app()->controller->module->profileUrl);
+				} // @todo: if error, do something
+			}
+			else if (isset($_POST['denyDelete'])) {
+				$this->redirect(Yii::app()->controller->module->profileUrl);
+			}
+
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'content'=>$this->renderPartial('_deleteKey', array('key'=>$key), true, true)));
+	            exit;   
+        	}
+			$this->render('deleteKey', array('key' => $key));
+		} else {
+			// @todo log error
+			if (Yii::app()->request->isAjaxRequest) {
+            	echo CJSON::encode(array(
+                	'status' => 'error',
+                	'content'=> 'An error happened. You shouldn\'t have seen this. You. Saw. <strong>Nothing</strong>.'));
+            	exit;
+            }
+
+			$this->redirect(Yii::app()->controller->module->profileUrl); 
+		}
 	}
 
 	public function actionAddApi() {
