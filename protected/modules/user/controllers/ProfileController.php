@@ -452,7 +452,8 @@ class ProfileController extends Controller
 		$model = $this->loadUser();
 		$tbl = ($registered ? 'regCharacters' : 'characters');
 		$char  = $model->{$tbl}(array('condition' => $tbl.'.characterID = :id', 'params'=>array(':id'=>$id)));
-		if (count($char) === 1) {
+
+		if (count($char) === 1 && !($registered && $char[0]->userID != Yii::app()->user->id)) {
 			return $char[0];
 		}
 		return false;
