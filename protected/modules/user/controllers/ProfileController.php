@@ -118,6 +118,7 @@ class ProfileController extends Controller
 			$new->isActive      = 1;
 			$new->characterName = $char->characterName;
 			$new->activeAPIMask = $new->getAvailableBitmask(Yii::app()->user->id, $id);
+			$new->userID        = Yii::app()->user->id;
 			if ($new->save()){
 				Yii::app()->user->setFlash('success', $char->characterName." was activated! Data will be polled from API servers momentarily."); }
 			else {
@@ -416,7 +417,7 @@ class ProfileController extends Controller
 				if ($model->validate()) {
 					$new_password = User::model()->notsafe()->findbyPk(Yii::app()->user->id);
 					if (UserModule::encrypting($model->oldpass) != $new_password->password) {
-						
+
 					}
 					$new_password->password = $pass;
 					$new_password->activkey = UserModule::encrypting(microtime().$model->password);
