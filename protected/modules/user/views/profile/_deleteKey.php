@@ -3,9 +3,21 @@
   'enableAjaxValidation' => false,
   'focus' => '#denyDelete',
 )); ?>
-<p>You are about to delete the API key <strong><?php echo $key->keyID; ?></strong>. Deleting this key may cause some characters to loose access to some API calls, or may irreversibly delete characters altogether if this is the sole key they rely upon. For your convenience, listed below are the various modifications to characters that will happen upon key deletion.</p>
-<ul><li>LIST CHARS</li></ul>
-<p>Are you sure you wish to delete the <strong><?php echo $key->keyID; ?></strong> key?</p>
+<p>You are about to delete the API key <strong><?php echo $key->keyID; ?></strong>. Deleting this key may cause some characters to loose access to some API calls, or may irreversibly delete characters altogether if this is the sole key they rely upon. For your convenience, listed below are the characters that may be affected by deleting this key.</p>
+
+<ul>
+<?php
+$dp = new CArrayDataProvider($key->regCharacters(), array('keyField' => 'characterID'));
+$this->widget('zii.widgets.CListView', array(
+    'dataProvider'=>$dp,
+    'itemView'=>'_keyDel_chars',   // refers to the partial view named '_post'
+    'summaryText'=>false,
+    'viewData'   =>array('key'=>$key),
+));
+
+?>
+</ul>
+<p>Are you sure you wish to delete the key <strong><?php echo $key->keyID; ?></strong>?</p>
 
 <div class="btn-toolbar">
  

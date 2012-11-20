@@ -74,7 +74,10 @@ class YUtilRegisteredKey extends CActiveRecord
 		return array(
 			'accountCharacters' => array(self::MANY_MANY,  'YAccountCharacters', 'yapeal_accountKeyBridge(keyID, characterID)'),
 			'accountKeyBridges' => array(self::HAS_MANY,   'YAccountKeyBridge', 'keyID'),
+			// returns owner of key
 			'user'              => array(self::BELONGS_TO, 'Users', 'userID'),
+			// returns registered characters associated with key
+			'regCharacters'     => array(self::MANY_MANY,  'YUtilRegisteredCharacter', 'yapeal_accountKeyBridge(keyID, characterID)'),
 		);
 	}
 

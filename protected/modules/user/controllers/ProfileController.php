@@ -35,8 +35,6 @@ class ProfileController extends Controller
 
 	/**
 	 * Button functions
-	 * @todo Make sure user can modify character! If not, don't allow it
-	 * Also, may them POSTs with ajax or whatev
 	 * @todo when registering / adding api, check characters in system. If any conflicts, notify 
 	 * the user and ask that he delete the key's associated with the characters from his API page on EVEO
 	 *
@@ -245,40 +243,6 @@ class ProfileController extends Controller
 			$this->showFlash(); // Just return the html and exit
             exit;               
        	}
-		// regardless of what happens, should also redirect back to profile page.
-        $this->redirect(Yii::app()->controller->module->profileUrl);
-	}
-
-	public function actionEnableKey($id) {
-		$key = $this->loadKey($id);
-
-		if($key){
-			$key->isActive = 1;
-			if ($key->save()) {
-				// if this is ajax, we simply return the data and that's it
-				if (Yii::app()->request->isAjaxRequest) {
-            		echo "<strong>Save Succesful</strong>";
-            		exit;               
-       			}
-			}
-		}
-		// regardless of what happens, should also redirect back to profile page.
-        $this->redirect(Yii::app()->controller->module->profileUrl);
-	}
-
-	public function actionDisableKey($id) {
-		$key = $this->loadKey($id);
-
-		if($key){
-			$key->isActive = 0;
-			if ($key->save()) {
-				// if this is ajax, we simply return the data and that's it
-				if (Yii::app()->request->isAjaxRequest) {
-            		echo "<strong>Save Succesful</strong>";
-            		exit;               
-       			}
-			}
-		}
 		// regardless of what happens, should also redirect back to profile page.
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}

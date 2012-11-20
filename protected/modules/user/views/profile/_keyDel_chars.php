@@ -1,0 +1,1 @@
+<li><?php echo $data->characterName; ?></li>
