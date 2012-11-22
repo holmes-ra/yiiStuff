@@ -6,15 +6,31 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 	'dataProvider'=>$keysDataProvider,
 	'template'=>"{items}",
 	'selectableRows' => 0,
+	'rowCssClassExpression' => '$data->isActive ? null : "error"',
 	'columns'=>array(
-		array('name'=>'Status', 'value'=>'$data->isActive ? "Enabled" : "Disabled"'),
+		array('name'=>'Status', 'type'=>'raw','value'=>'$data->isActive ? "<i class=\'icon-ok\'></i>" : "<i class=\'icon-warning-sign\'></i>"'),
 		array('name'=>'keyID', 'header'=>'Key'),
 		array('name'=>'vCode', 'header'=>'vCode'),
+		array('name'=>'info.type', 'header'=>'Type'),
 		array('name'=>'activeAPIMask', 'header'=>'Access Mask'),
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
-			'template'=>"<span class='right'>{delete}</span>",
+			'template'=>"<span class='right'>{refresh}{delete}</span>",
 			 'buttons' => array (
+			 	'refresh' => array
+				(
+					'label' => 'Refresh',
+					'icon'  => 'refresh',
+					'url'   => 'Yii::app()->createUrl("user/profile/refreshKey", array("id"=>$data->keyID))',
+					'options'=>array(  
+						'ajax'=>array(
+							'url'=>"js:$(this).attr('href')", 
+							'success'=> "js:function(data){
+								$('#keyFlash').html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut('slow');
+								$.fn.yiiGridView.update('key-grid'); }"  
+						),
+					),
+				), 
 				'delete' => array
 				(
 					'label' => 'Delete',

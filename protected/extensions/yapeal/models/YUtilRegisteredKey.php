@@ -83,6 +83,9 @@ class YUtilRegisteredKey extends CActiveRecord
         	 *     'condition'=>'t.userID = regCharacters.userID',)))
         	 */
 			'regCharacters' => array(self::MANY_MANY,  'YUtilRegisteredCharacter', 'yapeal_accountKeyBridge(keyID, characterID)'),
+			// returns info about key (max access mask, type, expiration)
+			'info' => array(self::HAS_ONE,  'YAccountAPIKeyInfo', 'keyID'),
+
 		);
 	}
 

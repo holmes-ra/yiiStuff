@@ -107,7 +107,7 @@ class User extends CActiveRecord
 
 	public static function keysDataProvider($user = null) {
 		if ($user === null) { $user = Yii::app()->user->id; }
-		$keys = User::model()->with('keys')->findByPk($user);
+		$keys = User::model()->with('keys.info')->findByPk($user);
 		return new CArrayDataProvider($keys->keys, array('keyField' => 'keyID'));
 	}
 

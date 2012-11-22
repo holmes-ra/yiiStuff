@@ -262,8 +262,6 @@ class ProfileController extends Controller
 
 		if ($key) {
 			if (isset($_POST['confirmDelete'])) {
-
-
 				// we have confirmation, go go go
 				$transaction = $key->dbConnection->beginTransaction();
 				try{
@@ -322,6 +320,30 @@ class ProfileController extends Controller
 
 			$this->redirect(Yii::app()->controller->module->profileUrl); 
 		}
+	}
+
+	public function actionRefreshKey($id){
+		$key = $this->loadKey($id);
+
+		if($key){
+			// @todo - validate key
+			$key->isActive = 1;
+			if ($key->update()) {
+				Yii::app()->user->setFlash('info', "<strong>".$key->keyID."</strong> has been refreshed."); }
+			else {
+				// @todo: actually log error
+				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+			}     
+       	} else {
+			// @fixme: maybe throw invalid input exception or soemthing?
+			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
+		}
+		if (Yii::app()->request->isAjaxRequest) {
+			$this->showFlash(); // Just return the html and exit
+            exit;               
+       	}
+		// regardless of what happens, should also redirect back to profile page.
+        $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
 
 	public function actionAddApi() {
