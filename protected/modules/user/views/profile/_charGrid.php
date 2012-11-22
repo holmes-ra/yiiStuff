@@ -14,6 +14,7 @@ $ajaxOptions = array(
 $columns = array(
 	array('name'=>'characterName', 'header'=>'Character'),
 	array('name'=>'corporationName', 'header'=>'Corporation'),
+
 	array(
 		'class'=>'bootstrap.widgets.TbButtonColumn',
 		'htmlOptions'=>array('style'=>'width: 60px;'),

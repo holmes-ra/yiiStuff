@@ -262,7 +262,29 @@ class ProfileController extends Controller
 
 		if ($key) {
 			if (isset($_POST['confirmDelete'])) {
-				if ($key->delete()) {
+
+
+				// we have confirmation, go go go
+				$transaction = $key->dbConnection->beginTransaction();
+				try{
+					if ($key->regCharacters){
+						foreach($key->regCharacters AS $char) { //if characters? what if no characters?
+							if ($char->keys) { // if keys, modify
+								$mask = 0;
+								foreach ($char->keys AS $key2) {
+									$mask = $mask | $key2->activeAPIMask;
+								}
+								$char->activeAPIMask = $mask;
+								$char->update();
+							}
+							else { // if no keys, delete
+								$char->delete();
+							}
+						}
+					}
+					$key->delete();
+					$transaction->commit();
+
 					Yii::app()->user->setFlash('info', $key->keyID." was successfully deleted.");
 
 					if (Yii::app()->request->isAjaxRequest) {
@@ -273,7 +295,11 @@ class ProfileController extends Controller
                     	exit;
                 	}
                 	$this->redirect(Yii::app()->controller->module->profileUrl);
-				} // @todo: if error, do something
+				}
+				catch(Exception $e)
+				{
+					$transaction->rollback();
+				}
 			}
 			else if (isset($_POST['denyDelete'])) {
 				$this->redirect(Yii::app()->controller->module->profileUrl);
