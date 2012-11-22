@@ -7,7 +7,7 @@
 
 <ul>
 <?php
-$dp = new CArrayDataProvider($key->regCharacters(), array('keyField' => 'characterID'));
+$dp = new CArrayDataProvider($key->regCharacters, array('keyField' => 'characterID'));
 $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$dp,
     'itemView'=>'_keyDel_chars',   // refers to the partial view named '_post'

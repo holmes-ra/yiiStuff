@@ -76,8 +76,13 @@ class YUtilRegisteredKey extends CActiveRecord
 			'accountKeyBridges' => array(self::HAS_MANY,   'YAccountKeyBridge', 'keyID'),
 			// returns owner of key
 			'user'              => array(self::BELONGS_TO, 'Users', 'userID'),
-			// returns registered characters associated with key
-			'regCharacters'     => array(self::MANY_MANY,  'YUtilRegisteredCharacter', 'yapeal_accountKeyBridge(keyID, characterID)'),
+			/** returns registered characters associated with key. 
+			 * To get registered characters that are also owned by current user, must use eager loading with this: 
+			 * ->with(array(
+			 *     'regCharacters'=>array(
+        	 *     'condition'=>'t.userID = regCharacters.userID',)))
+        	 */
+			'regCharacters' => array(self::MANY_MANY,  'YUtilRegisteredCharacter', 'yapeal_accountKeyBridge(keyID, characterID)'),
 		);
 	}
 
@@ -91,7 +96,7 @@ class YUtilRegisteredKey extends CActiveRecord
 			'isActive' => 'Is Active',
 			'keyID' => 'Key',
 			'proxy' => 'Proxy',
-			'vCode' => 'V Code',
+			'vCode' => 'vCode',
 			'userID' => 'User',
 		);
 	}

@@ -127,6 +127,9 @@ class YUtilRegisteredCharacter extends CActiveRecord
 			'charStandingsFromNPCCorporations' => array(self::HAS_MANY, 'YCharStandingsFromNPCCorporations', 'ownerID'),
 			'charWalletJournals' => array(self::HAS_MANY, 'YCharWalletJournal', 'ownerID'),
 			'charWalletTransactions' => array(self::HAS_MANY, 'YCharWalletTransactions', 'ownerID'),
+
+			
+			'keys' => array(self::MANY_MANY, 'YUtilRegisteredKey', 'yapeal_accountKeyBridge(characterID, keyID)'),
 		);
 	}
 

@@ -251,8 +251,14 @@ class ProfileController extends Controller
 		// @todo: When deleting key, go through characters accociated with key that are also in utilRegChars. 
 		// If any are found, see if character is associated with another key -by the same user (?)- and if so, update 
 		// characters active API to include LIKE (?) calls. if no characters are found, delete from utilRegChars
-
-		$key = $this->loadKey($id);
+		$user = $this->loadUser();
+		$key = YUtilRegisteredKey::model()->with(array(
+			'regCharacters'=>array(
+				'condition'=>'t.userID = regCharacters.userID',
+			),
+			'regCharacters.keys'=>array(
+				'on'=>'`keys`.`userID` = `t`.`userID` AND `keys`.`keyID` != `t`.`keyID`',
+			)))->findByPk($id, 't.userID=:userID',array(':userID'=>$user->id));
 
 		if ($key) {
 			if (isset($_POST['confirmDelete'])) {
