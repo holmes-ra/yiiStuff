@@ -1,4 +1,6 @@
 <li><?php 
+
+// todo: Find the new access mask. if new = old, do not display character as being modified
 if ($data->keys == null) {
 	$this->widget('bootstrap.widgets.TbLabel', array(
 		'type'=>'important',

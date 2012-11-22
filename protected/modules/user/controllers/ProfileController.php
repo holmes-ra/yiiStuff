@@ -254,7 +254,7 @@ class ProfileController extends Controller
 		$user = $this->loadUser();
 		$key = YUtilRegisteredKey::model()->with(array(
 			'regCharacters'=>array(
-				'condition'=>'t.userID = regCharacters.userID',
+				'on'=>'t.userID = regCharacters.userID',
 			),
 			'regCharacters.keys'=>array(
 				'on'=>'`keys`.`userID` = `t`.`userID` AND `keys`.`keyID` != `t`.`keyID`',
@@ -267,9 +267,9 @@ class ProfileController extends Controller
 				// we have confirmation, go go go
 				$transaction = $key->dbConnection->beginTransaction();
 				try{
-					if ($key->regCharacters){
+					if (count($key->regCharacters)){
 						foreach($key->regCharacters AS $char) { //if characters? what if no characters?
-							if ($char->keys) { // if keys, modify
+							if (count($char->keys)) { // if keys, modify
 								$mask = 0;
 								foreach ($char->keys AS $key2) {
 									$mask = $mask | $key2->activeAPIMask;
