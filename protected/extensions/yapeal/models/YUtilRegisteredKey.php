@@ -19,7 +19,6 @@
 class YUtilRegisteredKey extends CActiveRecord
 {
 	public $characters = array(); // is set during registration and new key. No better place to put this?
-
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -177,6 +176,12 @@ class YUtilRegisteredKey extends CActiveRecord
 		echo var_dump($key->withRelated->save(false, array('accountCharacters')));
 
 	*/
+
+	/**
+	 * After validate.
+	 * During validation, the apiCheck validator sets a few variables to Pheal results. We need
+	 * to post-process this info and set up relations. This includes characters on key and key info
+	 */
 	public function afterValidate() {
 		parent::afterValidate();
 		$char_array = array();
@@ -192,6 +197,13 @@ class YUtilRegisteredKey extends CActiveRecord
 			array_push($char_array, $char);
 		}
 		$this->accountCharacters = $char_array;
+
+		$tempinfo = $this->info;
+		if (($info = YAccountAPIKeyInfo::model()->findByPk($this->keyID)) === null){
+			$info = new YAccountAPIKeyInfo;
+		}
+		$info->attributes = $tempinfo;
+		$this->info = $info;
 	}
     
 

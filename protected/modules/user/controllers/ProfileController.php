@@ -353,7 +353,7 @@ class ProfileController extends Controller
             $model->attributes=$_POST['YUtilRegisteredKey'];
             $model->userID = Yii::app()->user->id;
 
-            if($model->validate() && $model->withRelated->save(false, array('accountCharacters')))
+            if($model->validate() && $model->withRelated->save(false, array('accountCharacters', 'info')))
             {
                 if (Yii::app()->request->isAjaxRequest)
                 {
