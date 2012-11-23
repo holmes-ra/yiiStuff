@@ -6,7 +6,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 	'dataProvider'=>$keysDataProvider,
 	'template'=>"{items}",
 	'selectableRows' => 0,
-	'rowCssClassExpression' => '$data->isActive ? null : "error"',
+	'rowCssClassExpression' => '(!$data->isActive ? "error" : ($data->info->accessMask != $data->activeAPIMask ? "warning" : null))',
 	'columns'=>array(
 		array('name'=>'Status', 'type'=>'raw', 'value'=>'$this->grid->getOwner()->renderPartial(\'_keyGrid_statusCol\', array(\'data\'=>$data),true);'),
 		array('name'=>'keyID', 'header'=>'Key'),
