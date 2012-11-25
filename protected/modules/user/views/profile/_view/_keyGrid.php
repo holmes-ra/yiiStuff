@@ -8,7 +8,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
 	'selectableRows' => 0,
 	'rowCssClassExpression' => '(!$data->isActive ? "error" : ($data->info->accessMask != $data->activeAPIMask ? "warning" : null))',
 	'columns'=>array(
-		array('name'=>'Status', 'type'=>'raw', 'value'=>'$this->grid->getOwner()->renderPartial(\'_keyGrid_statusCol\', array(\'data\'=>$data),true);'),
+		array('name'=>'Status', 'type'=>'raw', 'value'=>'$this->grid->getOwner()->renderPartial(\'_view/_keyGrid_statusCol\', array(\'data\'=>$data),true);'),
 		array('name'=>'keyID', 'header'=>'Key'),
 		array('name'=>'vCode', 'header'=>'vCode'),
 		array('name'=>'info.type', 'header'=>'Type'),

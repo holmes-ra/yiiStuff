@@ -13,5 +13,4 @@ $this->breadcrumbs=array(
 
 <h3>Add API</h3>
 
-
-<?php echo $this->renderPartial('_addApi', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_view/_addApi', array('model'=>$model)); ?>

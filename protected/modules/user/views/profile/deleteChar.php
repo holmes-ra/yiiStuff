@@ -4,7 +4,5 @@ $this->breadcrumbs=array(
 );?><h2><?php echo UserModule::t('Delete'); ?></h2>
 <?php echo $this->renderPartial('menu');
 
-$this->renderPartial('_deleteChar', array(
-    'char' => $char,));
-
+$this->renderPartial('_view/_deleteChar', array('char' => $char,));
 ?>

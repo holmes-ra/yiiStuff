@@ -4,7 +4,5 @@ $this->breadcrumbs=array(
 );?><h2><?php echo UserModule::t('Delete Key'); ?></h2>
 <?php echo $this->renderPartial('menu');
 
-$this->renderPartial('_deleteKey', array(
-    'key' => $key,));
-
+$this->renderPartial('_view/_deleteKey', array('key' => $key,));
 ?>

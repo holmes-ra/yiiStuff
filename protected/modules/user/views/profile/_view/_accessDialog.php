@@ -7,7 +7,7 @@
  * @todo include descrition via non-obtrusive popout/over/tooltip 
  */
 
-$this->renderPartial('_accessDescription', array('char'=>$char));
+$this->renderPartial('_view/_accessDescription', array('char'=>$char));
 
 $form=$this->beginWidget('CActiveForm', array(
         'id'=>'access-form',

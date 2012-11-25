@@ -29,7 +29,7 @@ $this->widget('ext.EUpdateDialog.EUpdateDialog', array(
 	'htmlOptions'=>array('id'=>'keyFlash', 'style'=>'margin-bottom:-20px;'),
 ));
 ?>
-<?php $this->renderPartial('_keyGrid', array('keysDataProvider'=>$keysDataProvider)); ?> 
+<?php $this->renderPartial('_view/_keyGrid', array('keysDataProvider'=>$keysDataProvider)); ?> 
 
 <h3>Characters</h3>
 <p>The table below lists the characters associated with your API keys. to start pulling character data, 
@@ -48,4 +48,4 @@ $this->widget('ext.EUpdateDialog.EUpdateDialog', array(
 ));
 ?>
 
-<?php $this->renderPartial('_charGrid', array('charDataProvider'=>$charDataProvider, 'user'=>$model)); ?>
+<?php $this->renderPartial('_view/_charGrid', array('charDataProvider'=>$charDataProvider, 'user'=>$model)); ?>

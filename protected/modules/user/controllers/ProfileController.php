@@ -72,7 +72,7 @@ class ProfileController extends Controller
 			if (Yii::app()->request->isAjaxRequest) {
 				$dataProvider=new CActiveDataProvider(YUtilAccessMask::model()->char()->bitmask($availableMask));
             	echo CJSON::encode(array(
-                	'content'=>$this->renderPartial('_accessDialog', array(
+                	'content'=>$this->renderPartial('_view/_accessDialog', array(
                 		'char'=>$char,
                 		'dataProvider'  => $dataProvider,
 						'availableMask' => YUtilRegisteredCharacter::model()->getAvailableBitmask(Yii::app()->user->id, $id)), true, true)));
@@ -206,7 +206,7 @@ class ProfileController extends Controller
 
 			if (Yii::app()->request->isAjaxRequest) {
             	echo CJSON::encode(array(
-                	'content'=>$this->renderPartial('_deleteChar', array(
+                	'content'=>$this->renderPartial('_view/_deleteChar', array(
                 		'char'=>$char), true, true)));
 	            exit;   
         	}
@@ -305,7 +305,7 @@ class ProfileController extends Controller
 
 			if (Yii::app()->request->isAjaxRequest) {
             	echo CJSON::encode(array(
-                	'content'=>$this->renderPartial('_deleteKey', array('key'=>$key), true, true)));
+                	'content'=>$this->renderPartial('_view/_deleteKey', array('key'=>$key), true, true)));
 	            exit;   
         	}
 			$this->render('deleteKey', array('key' => $key));
@@ -379,7 +379,7 @@ class ProfileController extends Controller
         {
             echo CJSON::encode(array(
            		'status' => 'render', 
-                'content'=>$this->renderPartial('_addApi', array('model'=>$model), true,true)));
+                'content'=>$this->renderPartial('_view/_addApi', array('model'=>$model), true,true)));
             exit;    
         }
         else {

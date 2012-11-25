@@ -6,7 +6,7 @@ $this->breadcrumbs=array(
 
 <?php
 
-$this->renderPartial('_accessDescription', array('char'=>$char));
+$this->renderPartial('_view/_accessDescription', array('char'=>$char));
 
 $this->widget('bootstrap.widgets.TbAlert', array(
 	'block'=>true, // display a larger alert block?
