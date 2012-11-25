@@ -194,10 +194,7 @@ class YUtilRegisteredKey extends CActiveRecord
 		foreach ($this->keyInfo->key->characters AS $character){
 			if (($char = YAccountCharacters::model()->findByPk($character->characterID)) === null){
 				$char = new YAccountCharacters;
-				$char->characterID     = $character->characterID;
-				$char->characterName   = $character->characterName;
-				$char->corporationID   = $character->corporationID;
-				$char->corporationName = $character->corporationName;
+				$char->attributes = $character->_attribs;
 			}
 			array_push($char_array, $char);
 		}
