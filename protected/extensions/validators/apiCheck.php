@@ -19,14 +19,11 @@ class apiCheck extends CValidator
 
 		$api = new Pheal($keyID, $vCode);
 		try {
-			// @todo: move all this to afterValidate() of YUtilRegisteredKey?
-			$keyInfo = $api->accountScope->APIKeyInfo();
-			$object->activeAPIMask = $keyInfo->key->accessMask;
-			$object->characters = $keyInfo->key->characters;
-			$object->info = $keyInfo->key->_attribs;
+			$object->keyInfo = $api->accountScope->APIKeyInfo();
 		} catch (PhealAPIException $e) {
 			$this->addError($object, $attribute, 'KeyID/vCode combo invalid');
 		}
+		// @todo: does Pheal throw an exception when it cannot connect to API server? If so, display that
 	}
 }
 

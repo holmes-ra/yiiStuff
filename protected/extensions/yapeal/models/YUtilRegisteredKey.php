@@ -18,7 +18,7 @@
  */
 class YUtilRegisteredKey extends CActiveRecord
 {
-	public $characters = array(); // is set during registration and new key. No better place to put this?
+	public $keyInfo; // is set during registration and new key from apiCheck validator.
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -179,14 +179,19 @@ class YUtilRegisteredKey extends CActiveRecord
 
 	/**
 	 * After validate.
-	 * During validation, the apiCheck validator sets a few variables to Pheal results. We need
+	 * During validation, the apiCheck validator sets Pheal results. We need
 	 * to post-process this info and set up relations. This includes characters on key and key info
 	 */
 	public function afterValidate() {
 		parent::afterValidate();
-		$char_array = array();
 
-		foreach ($this->characters AS $character){
+		if ($this->hasErrors()) {
+			return; }
+
+		$this->activeAPIMask = $this->keyInfo->key->accessMask;
+		
+		$char_array = array();
+		foreach ($this->keyInfo->key->characters AS $character){
 			if (($char = YAccountCharacters::model()->findByPk($character->characterID)) === null){
 				$char = new YAccountCharacters;
 				$char->characterID     = $character->characterID;
@@ -202,7 +207,7 @@ class YUtilRegisteredKey extends CActiveRecord
 		if (($info = YAccountAPIKeyInfo::model()->findByPk($this->keyID)) === null){
 			$info = new YAccountAPIKeyInfo;
 		}
-		$info->attributes = $tempinfo;
+		$info->attributes = $this->keyInfo->key->_attribs;
 		$this->info = $info;
 	}
     

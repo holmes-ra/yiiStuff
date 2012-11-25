@@ -326,14 +326,21 @@ class ProfileController extends Controller
 		$key = $this->loadKey($id);
 
 		if($key){
-			// @todo - validate key
-			$key->isActive = 1;
-			if ($key->update()) {
-				Yii::app()->user->setFlash('info', "<strong>".$key->keyID."</strong> has been refreshed."); }
-			else {
-				// @todo: actually log error
-				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
-			}     
+			if ($key->validate()) {
+				if (!$key->isActive) {
+					$key->isActive = 1; } 
+				else if ($key->info->accessMask != $key->activeAPIMask) {
+					$key->activeAPIMask = $key->info->accessMask; }
+
+				if ($key->update()) {
+					Yii::app()->user->setFlash('info', "<strong>".$key->keyID."</strong> has been refreshed."); }
+				else {
+					// @todo: actually log error
+					Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
+				}
+			} else {
+				Yii::app()->user->setFlash('error', "Validation of <strong>".$key->keyID."</strong> failed. Please check keyID/vCode combo on the official EVE Online API support page.");
+			}
        	} else {
 			// @fixme: maybe throw invalid input exception or soemthing?
 			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Trying to modify data that doesn\'t exist in your user account');
@@ -378,9 +385,6 @@ class ProfileController extends Controller
         else {
             $this->render('addApi',array('model'=>$model,)); }
 	}
-
-
-
 
 	/**
 	 * Updates a particular model.
