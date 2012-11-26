@@ -69,8 +69,30 @@ $columns = array(
 				'icon'  => 'ok',
 				'url'   => 'Yii::app()->createUrl("user/profile/activateChar", array("id"=>$data->characterID))',
 				'visible' => '$data->registered === null || $data->registered->userID != '.$user->id,
-				'options'=>array(  
-					'ajax'=>$ajaxOptions,
+				'options'=>array( 
+					'data-update-dialog-title' => Yii::t( 'app', 'Activate Character' ),
+					'data-update-dialog-type' => 'close', 
+					'ajax'=>array(
+						'url'=>"js:$(this).attr('href')", 
+						'type'=>'post',
+						'dataType'=>'json',
+						'success'=> "js:function(data){
+							console.log(data);
+							if (data.status == 'success')
+                			{
+								$('#charFlash').html(data.content).fadeIn().animate({opacity: 1.0}, 3000).fadeOut('slow');
+								$.fn.yiiGridView.update('char-grid'); 
+							}
+							else{
+								// Find a better way to do this
+								// ie: rewrite whole notification?
+								updateDialog.init();
+								updateDialog.dialogContent.html( data.content );
+    							updateDialog.dialog.dialog({ 
+    								title:'Activation Conflict', 
+    								buttons: {Close: function() { $( this ).dialog( 'close' ); }}}).dialog( 'open' );
+							}
+						}"),
 				),
 			),      
 			'default' => array

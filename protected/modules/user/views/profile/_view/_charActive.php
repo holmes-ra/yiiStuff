@@ -1,0 +1,4 @@
+<p><span class="label label-important">Warning</span> Character is already activated on <strong><?php echo Yii::app()->name ?></strong>. This could mean someone else is using your API keys and has activated <strong><?php echo $char->characterName; ?></strong> on their account. This could be a simple oversight by recruiters, or or could be someone is maliciously using your API keys to monitor your character on <strong><?php echo Yii::app()->name ?></strong>.</p>
+<p>For your convenience, the API Key ID's associated with this character in the <strong><?php echo $char->characterName; ?></strong> database is shown below. Please visit the EVE Online API Support website, login with your EVE Online account, and delete/edit/or otherwise disable the keys that are faulty. You will not be able to activate <strong><?php echo $char->characterName; ?></strong> on your account until you are determined to be the sole owner.</p>
+
+LIST KEYS HERE

@@ -117,20 +117,34 @@ class ProfileController extends Controller
 			$new->characterName = $char->characterName;
 			$new->activeAPIMask = $new->getAvailableBitmask(Yii::app()->user->id, $id);
 			$new->userID        = Yii::app()->user->id;
-			if ($new->save()){
-				Yii::app()->user->setFlash('success', $char->characterName." was activated! Data will be polled from API servers momentarily."); }
+			if ($new->save()) {
+				Yii::app()->user->setFlash('success', $char->characterName." was activated! Data will be polled from API servers momentarily.");
+				if (Yii::app()->request->isAjaxRequest) {
+				  	echo CJSON::encode(array(
+           	    	 	'status'=>'success', 
+	       		     	'content'=>Yii::app()->user->getFlash('success'),
+              		));
+             		exit; 
+             	}
+            }
 			else {
 				// @todo: actually log error
 				Yii::app()->user->setFlash('error', 'There was an error while trying to save data into database. This error has been logged and will be reviewed ASAP.');
 			}
 		} 
 		else {
-			// @todo if character is already activated, raise better warning and display info to user about keys associated with
-			Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Character is already registered. This could mean someone else is using your API keys.');
+			if (Yii::app()->request->isAjaxRequest) {
+			  	echo CJSON::encode(array(
+           			'status' => 'render', 
+	            	'content'=>$this->renderPartial('_view/_charActive', array('char'=>$new), true, true),
+              	));
+             	exit;
+             }
+             Yii::app()->user->setFlash('error', '<strong>ERROR:</strong> Character is already registered. This could mean someone else is using your API keys.');
 		}
 		if (Yii::app()->request->isAjaxRequest) {
-			$this->showFlash(); // Just return the html and exit
-            exit;               
+		//	$this->showFlash(); // Just return the html and exit
+         //   exit;               
        	}
         $this->redirect(Yii::app()->controller->module->profileUrl);
 	}
